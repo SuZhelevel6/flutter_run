@@ -1,92 +1,31 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:window_manager/window_manager.dart';
-
+import 'core/app/fx_application.dart';
 import 'core/logging/talker_config.dart';
-import 'core/logging/app_bloc_observer.dart';
 import 'core/platform/platform_adapter.dart';
-import 'core/router/app_router.dart';
 
 /// Flutter Run - 主入口
 ///
 /// 这是一个基于 Clean Architecture 的 Flutter 应用
 ///
-/// 启动流程:
-/// 1. 初始化 Flutter Widgets Binding
-/// 2. 初始化窗口管理器（桌面端）
-/// 3. 初始化 Talker 日志系统
-/// 4. 配置 BLoC 观察器
-/// 5. 打印平台信息（开发环境）
-/// 6. 启动应用
-void main() async {
-  // 1. 确保 Flutter Widgets Binding 已初始化
-  WidgetsFlutterBinding.ensureInitialized();
+/// 启动流程（通过 FxStarter 框架管理）:
+/// 1. FxApplication.run() 启动应用
+/// 2. 显示启动页面（Splash）
+/// 3. FlutterRunStartRepository.initApp() 执行启动任务:
+///    - 初始化 Flutter Widgets Binding
+///    - 初始化 Talker 日志系统
+///    - 初始化窗口管理器（桌面端）
+///    - 打印平台信息
+///    - 加载应用配置
+/// 4. onLoaded() 回调 - 配置 BLoC 观察器
+/// 5. onStartSuccess() 回调 - 导航到首页
+/// 6. 完成启动，显示主应用
+void main(List<String> args) {
 
-  // 2. 初始化窗口管理器（仅桌面平台）
-  if (PlatformAdapter.isDesktop) {
-    await windowManager.ensureInitialized();
-
-    const windowOptions = WindowOptions(
-      size: Size(1200, 800),
-      minimumSize: Size(800, 600),
-      center: true,
-      backgroundColor: Colors.transparent,
-      skipTaskbar: false,
-      titleBarStyle: TitleBarStyle.hidden, // 隐藏原生标题栏
-    );
-
-    await windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
-    });
-  }
-
-  // 3. 初始化日志系统
-  TalkerConfig.init();
-
-  // 4. 配置 BLoC 观察器
-  Bloc.observer = AppBlocObserver();
-
-  // 5. 打印平台信息（开发环境）
+  // 打印平台信息 (用于调试)
   PlatformAdapter.printPlatformInfo();
 
-  // 6. 启动应用
-  runApp(const MyApp());
-}
+  // 第1步：初始化 Talker 日志系统（必须在最早期完成）
+  // 根据 Talker 官方文档：应在 main() 函数早期初始化以捕获启动期间的异常
+  TalkerConfig.init();
 
-/// 应用根 Widget
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // 创建路由实例
-    final router = AppRouter.createRouter();
-
-    return MaterialApp.router(
-      title: 'Flutter Run',
-      debugShowCheckedModeBanner: false,
-      routerConfig: router,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
-      ),
-      themeMode: ThemeMode.system,
-    );
-  }
+  const FxApplication().run(args);
 }

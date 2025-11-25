@@ -113,4 +113,37 @@ class AppRouter {
       ),
     );
   }
+
+  /// 创建 MaterialApp.router 实例
+  ///
+  /// 用于 FxApplication，返回一个使用 GoRouter 的 MaterialApp.router
+  static Widget createRouterApp() {
+    final router = createRouter();
+
+    return MaterialApp.router(
+      title: 'Flutter Run',
+      debugShowCheckedModeBanner: false,
+      routerConfig: router,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          elevation: 0,
+        ),
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          elevation: 0,
+        ),
+      ),
+      themeMode: ThemeMode.system,
+    );
+  }
 }
