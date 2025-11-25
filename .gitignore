@@ -96,3 +96,6 @@ linux/flutter/ephemeral/
 
 # CLAUDE
 CLAUDE.md
+
+# 忽略 docs/ 下的文件
+docs/
