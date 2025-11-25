@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/settings/settings_cubit.dart';
 
 /// 字体设置页
 ///
@@ -13,9 +15,142 @@ class FontSettingPage extends StatelessWidget {
         title: const Text('字体设置'),
         centerTitle: true,
       ),
-      body: const Center(
-        child: Text('待实现 - 字体大小设置'),
+      body: BlocBuilder<SettingsCubit, dynamic>(
+        builder: (context, state) {
+          final cubit = context.read<SettingsCubit>();
+          final fontScale = state.fontScale;
+
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // 预览文本
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '预览效果',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        '这是一段示例文本，用于预览字体大小效果。',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'This is a sample text to preview font size effect.',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // 字体大小滑块
+              Text(
+                '字体缩放比例',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Text('小'),
+                  Expanded(
+                    child: Slider(
+                      value: fontScale,
+                      min: 0.8,
+                      max: 1.5,
+                      divisions: 14,
+                      label: '${(fontScale * 100).toInt()}%',
+                      onChanged: (value) => cubit.setFontScale(value),
+                    ),
+                  ),
+                  const Text('大'),
+                ],
+              ),
+              Center(
+                child: Text(
+                  '当前: ${(fontScale * 100).toInt()}%',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // 预设大小选项
+              Text(
+                '预设大小',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              _FontScaleOption(
+                title: '小',
+                scale: 0.9,
+                currentScale: fontScale,
+                onTap: () => cubit.setFontScale(0.9),
+              ),
+              _FontScaleOption(
+                title: '标准',
+                scale: 1.0,
+                currentScale: fontScale,
+                onTap: () => cubit.setFontScale(1.0),
+              ),
+              _FontScaleOption(
+                title: '中',
+                scale: 1.1,
+                currentScale: fontScale,
+                onTap: () => cubit.setFontScale(1.1),
+              ),
+              _FontScaleOption(
+                title: '大',
+                scale: 1.2,
+                currentScale: fontScale,
+                onTap: () => cubit.setFontScale(1.2),
+              ),
+              _FontScaleOption(
+                title: '特大',
+                scale: 1.3,
+                currentScale: fontScale,
+                onTap: () => cubit.setFontScale(1.3),
+              ),
+            ],
+          );
+        },
       ),
+    );
+  }
+}
+
+/// 字体缩放选项组件
+class _FontScaleOption extends StatelessWidget {
+  final String title;
+  final double scale;
+  final double currentScale;
+  final VoidCallback onTap;
+
+  const _FontScaleOption({
+    required this.title,
+    required this.scale,
+    required this.currentScale,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = (scale - currentScale).abs() < 0.01;
+
+    return ListTile(
+      title: Text(title),
+      trailing: isSelected
+          ? Icon(
+              Icons.check_circle,
+              color: Theme.of(context).primaryColor,
+            )
+          : null,
+      onTap: onTap,
     );
   }
 }

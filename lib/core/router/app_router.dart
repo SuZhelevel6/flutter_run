@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../platform/platform_adapter.dart';
 import '../navigation/view/desktop/app_desk_navigation.dart';
 import '../app/splash/splash_page.dart';
+import '../settings/settings_cubit.dart';
 import '../../features/widget/presentation/pages/widget_page.dart';
 import '../../features/blog/presentation/pages/blog_page.dart';
 import '../../features/painter/presentation/pages/painter_page.dart';
@@ -15,6 +17,7 @@ import '../../features/settings/presentation/pages/theme_color_page.dart';
 import '../../features/settings/presentation/pages/font_setting_page.dart';
 import '../../features/settings/presentation/pages/language_setting_page.dart';
 import '../../features/settings/presentation/pages/version_info_page.dart';
+import '../../features/settings/presentation/pages/log_viewer_page.dart';
 
 /// AppRouter: 应用路由配置
 ///
@@ -80,6 +83,11 @@ class AppRouter {
               path: 'version',
               builder: (context, state) => const VersionInfoPage(),
             ),
+            // 日志查看器
+            GoRoute(
+              path: 'logs',
+              builder: (context, state) => const LogViewerPage(),
+            ),
           ],
         ),
       ];
@@ -144,30 +152,53 @@ class AppRouter {
   static Widget createRouterApp() {
     final router = createRouter();
 
-    return MaterialApp.router(
-      title: 'Flutter Run',
-      debugShowCheckedModeBanner: false,
-      routerConfig: router,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
+    // 创建全局的 SettingsCubit 实例
+    return BlocProvider(
+      create: (context) => SettingsCubit()..init(),
+      child: BlocBuilder<SettingsCubit, dynamic>(
+        builder: (context, settingsState) {
+          // 获取设置状态
+          final settings = context.watch<SettingsCubit>().state;
+
+          return MaterialApp.router(
+            title: 'Flutter Run',
+            debugShowCheckedModeBanner: false,
+            routerConfig: router,
+            // 使用设置中的主题模式
+            themeMode: settings.themeMode,
+            // 亮色主题 - 使用设置中的主题色
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: settings.themeColor),
+              useMaterial3: true,
+              appBarTheme: const AppBarTheme(
+                centerTitle: true,
+                elevation: 0,
+              ),
+            ),
+            // 暗色主题 - 使用设置中的主题色
+            darkTheme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: settings.themeColor,
+                brightness: Brightness.dark,
+              ),
+              useMaterial3: true,
+              appBarTheme: const AppBarTheme(
+                centerTitle: true,
+                elevation: 0,
+              ),
+            ),
+            // 字体缩放
+            builder: (context, child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(settings.fontScale),
+                ),
+                child: child!,
+              );
+            },
+          );
+        },
       ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
-      ),
-      themeMode: ThemeMode.system,
     );
   }
 }

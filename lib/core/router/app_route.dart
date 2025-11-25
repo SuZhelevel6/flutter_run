@@ -41,6 +41,9 @@ enum AppRoute {
 
   /// 设置子页面 - 版本信息
   settingsVersion('version', url: '/settings/version'),
+
+  /// 设置子页面 - 日志查看器
+  settingsLogs('logs', url: '/settings/logs'),
   ;
 
   /// 路由路径 (用于 GoRoute 的 path 参数)

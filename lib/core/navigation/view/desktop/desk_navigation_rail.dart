@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../router/app_route.dart';
+import '../../../settings/settings_cubit.dart';
 import '../../model/app_tab.dart';
 
 /// 桌面端导航栏组件
@@ -27,7 +29,15 @@ class DeskNavigationRail extends StatelessWidget {
         children: [
           // 顶部 Logo 区域
           const SizedBox(height: 60),
-          const Icon(Icons.play_circle_filled, size: 48, color: Colors.blue),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              'assets/images/app_icon.png',
+              width: 48,
+              height: 48,
+              fit: BoxFit.cover,
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
             'Flutter Run',
@@ -50,16 +60,119 @@ class DeskNavigationRail extends StatelessWidget {
             ),
           ),
 
-          // 底部设置按钮
-          const Divider(height: 1),
-          const SizedBox(height: 8),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Settings',
-            onPressed: () => context.go(AppRoute.settings.url),
+          // 底部操作按钮区域（参考 FlutterPlay MenuBarTail）
+          Divider(
+            color: isDark ? Colors.white24 : Colors.black12,
+            height: 1,
+            indent: 20,
+            endIndent: 20,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
+          const _MenuBarTail(),
+          const SizedBox(height: 8),
         ],
+      ),
+    );
+  }
+}
+
+/// 导航栏底部操作按钮组
+///
+/// 参考 FlutterPlay MenuBarTail 设计
+/// 包含：设置、语言切换、深色模式切换
+class _MenuBarTail extends StatelessWidget {
+  const _MenuBarTail();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          // 设置按钮
+          _ActionButton(
+            icon: Icons.settings,
+            onTap: () {
+              context.go(AppRoute.settings.url);
+            },
+          ),
+          // 语言切换按钮（暂不实现国际化，显示占位按钮）
+          _ActionButton(
+            icon: Icons.translate,
+            onTap: () {
+              // TODO: 实现语言切换逻辑
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('语言切换功能开发中...')),
+              );
+            },
+          ),
+          // 深色模式切换按钮
+          BlocBuilder<SettingsCubit, dynamic>(
+            builder: (context, state) {
+              final settings = context.watch<SettingsCubit>().state;
+              // 根据当前主题显示不同图标
+              final icon = settings.themeMode == ThemeMode.dark
+                  ? Icons.light_mode  // 深色模式显示太阳图标
+                  : Icons.dark_mode;  // 浅色模式显示月亮图标
+
+              return _ActionButton(
+                icon: icon,
+                onTap: () {
+                  // 在深色和浅色模式之间切换
+                  final newMode = settings.themeMode == ThemeMode.dark
+                      ? ThemeMode.light
+                      : ThemeMode.dark;
+                  context.read<SettingsCubit>().setThemeMode(newMode);
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 操作按钮（带悬停效果）
+class _ActionButton extends StatefulWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ActionButton({required this.icon, required this.onTap});
+
+  @override
+  State<_ActionButton> createState() => _ActionButtonState();
+}
+
+class _ActionButtonState extends State<_ActionButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // 根据主题模式调整按钮颜色
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hoverColor = isDark ? Colors.white24 : Colors.black12;
+    final iconColor = isDark ? Colors.white : Colors.black87;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: _isHovered ? hoverColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            widget.icon,
+            color: iconColor,
+            size: 20,
+          ),
+        ),
       ),
     );
   }
