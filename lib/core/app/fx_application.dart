@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_run/core/logging/app_logger.dart';
 import 'package:fx_boot_starter/fx_boot_starter.dart';
-import 'package:go_router/go_router.dart';
 
 import 'app_config.dart';
 import 'app_start_repository.dart';
@@ -68,7 +67,10 @@ class FxApplication with FxStarter<AppConfig> {
   /// 生命周期钩子 2: 启动成功
   ///
   /// 在 onLoaded 之后调用
-  /// 此时可以执行导航、检查更新等操作
+  /// 此时可以执行检查更新等操作
+  ///
+  /// 注意: 不要在此处使用 context.go() 导航，因为此时 GoRouter 还未就绪
+  /// FlutterRunSplash 会监听启动状态，在成功后自动跳转到首页
   ///
   /// 参数:
   /// - context: BuildContext
@@ -77,11 +79,8 @@ class FxApplication with FxStarter<AppConfig> {
   void onStartSuccess(BuildContext context, AppConfig state) {
     AppLogger.info('=== onStartSuccess 回调 ===');
     AppLogger.info('启动成功，应用已就绪!');
-
-    // 使用 GoRouter 导航到 Widget 页（默认首页）
-    context.go('/widget');
-
-    AppLogger.info('导航到首页: /widget');
+    AppLogger.info('FlutterRunSplash 将在延迟后自动跳转到首页');
+    AppLogger.info('GoRouter 初始路由: / (Splash)');
     AppLogger.info('应用启动流程完成');
   }
 
@@ -99,17 +98,8 @@ class FxApplication with FxStarter<AppConfig> {
     AppLogger.error('启动失败: $error');
     AppLogger.error('堆栈跟踪: $trace');
 
-    // 显示错误提示
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('应用启动失败: $error'),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 5),
-      ),
-    );
-
-    // 导航到首页（降级处理）
-    context.go('/widget');
+    // TODO: 可以在这里显示错误页面或重试按钮
+    // 注意: 不要使用 context.go() 导航，因为 GoRouter 可能还未就绪
   }
 
   /// 生命周期钩子 4: 全局错误处理

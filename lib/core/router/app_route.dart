@@ -3,6 +3,9 @@
 /// 定义所有路由的 path 和 url
 /// 参考 FlutterUnit 的路由设计
 enum AppRoute {
+  /// Splash 启动页
+  splash('/', url: '/'),
+
   /// Widget 展示页
   widget('/widget', url: '/widget'),
 

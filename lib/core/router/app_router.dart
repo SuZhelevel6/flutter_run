@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../platform/platform_adapter.dart';
 import '../navigation/view/desktop/app_desk_navigation.dart';
+import '../app/splash/splash_page.dart';
 import '../../features/widget/presentation/pages/widget_page.dart';
 import '../../features/blog/presentation/pages/blog_page.dart';
 import '../../features/painter/presentation/pages/painter_page.dart';
@@ -21,6 +22,11 @@ import '../../features/settings/presentation/pages/version_info_page.dart';
 class AppRouter {
   /// 主体路由列表
   static List<RouteBase> get _bodyRoutes => [
+        // Splash 启动页（独立路由，不在导航栏外壳内）
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const FlutterRunSplash(),
+        ),
         GoRoute(
           path: '/widget',
           builder: (context, state) => const WidgetPage(),
@@ -80,16 +86,33 @@ class AppRouter {
 
   /// 创建 GoRouter 实例
   static GoRouter createRouter() {
+    // Splash 路由（独立，不在 ShellRoute 内）
+    final splashRoute = GoRoute(
+      path: '/',
+      builder: (context, state) => const FlutterRunSplash(),
+    );
+
+    // 主功能路由（除去 Splash）
+    final mainRoutes = _bodyRoutes.where((route) {
+      if (route is GoRoute) {
+        return route.path != '/';
+      }
+      return true;
+    }).toList();
+
     return GoRouter(
-      initialLocation: '/widget',
+      initialLocation: '/', // 初始路由改为 Splash
       routes: <RouteBase>[
+        // Splash 路由（独立）
+        splashRoute,
+
         // 主体路由 - 根据平台判断是否使用 ShellRoute
         if (PlatformAdapter.isDesktopUI)
           ShellRoute(
             builder: (context, state, Widget child) => AppDeskNavigation(content: child),
-            routes: _bodyRoutes,
+            routes: mainRoutes,
           ),
-        if (!PlatformAdapter.isDesktopUI) ..._bodyRoutes,
+        if (!PlatformAdapter.isDesktopUI) ...mainRoutes,
       ],
       // 异常处理
       errorBuilder: (context, state) => Scaffold(
@@ -117,6 +140,7 @@ class AppRouter {
   /// 创建 MaterialApp.router 实例
   ///
   /// 用于 FxApplication，返回一个使用 GoRouter 的 MaterialApp.router
+  /// Splash 页面通过路由显示，初始路由为 "/"
   static Widget createRouterApp() {
     final router = createRouter();
 
