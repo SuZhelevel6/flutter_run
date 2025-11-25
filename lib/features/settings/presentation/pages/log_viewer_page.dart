@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 import '../../../../core/logging/talker_config.dart';
+import '../../../../core/l10n/l10n.dart';
 
 /// 日志查看器页面
 ///
@@ -11,6 +12,8 @@ class LogViewerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       body: Column(
         children: [
@@ -20,7 +23,7 @@ class LogViewerPage extends StatelessWidget {
           Expanded(
             child: TalkerScreen(
               talker: TalkerConfig.instance,
-              appBarTitle: 'Flutter Run 日志',
+              appBarTitle: l10n.logViewerTitle,
             ),
           ),
         ],

@@ -55,6 +55,7 @@ class DeskNavigationRail extends StatelessWidget {
                   tab: tab,
                   isSelected: isSelected,
                   onTap: () => context.go(tab.path),
+                  context: context,
                 );
               }).toList(),
             ),
@@ -97,13 +98,18 @@ class _MenuBarTail extends StatelessWidget {
               context.go(AppRoute.settings.url);
             },
           ),
-          // 语言切换按钮（暂不实现国际化，显示占位按钮）
-          _ActionButton(
-            icon: Icons.translate,
-            onTap: () {
-              // TODO: 实现语言切换逻辑
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('语言切换功能开发中...')),
+          // 语言切换按钮（中英文切换）
+          BlocBuilder<SettingsCubit, dynamic>(
+            builder: (context, state) {
+              final settings = context.watch<SettingsCubit>().state;
+              return _ActionButton(
+                icon: Icons.translate,
+                onTap: () {
+                  // 在中英文之间切换
+                  // 如果是英文或 null，切换到中文；如果是中文，切换到英文
+                  final newLanguage = (settings.languageCode == 'zh') ? 'en' : 'zh';
+                  context.read<SettingsCubit>().setLanguage(newLanguage);
+                },
               );
             },
           ),
@@ -183,11 +189,13 @@ class _MenuCell extends StatelessWidget {
   final AppTab tab;
   final bool isSelected;
   final VoidCallback onTap;
+  final BuildContext context;
 
   const _MenuCell({
     required this.tab,
     required this.isSelected,
     required this.onTap,
+    required this.context,
   });
 
   @override
@@ -235,7 +243,7 @@ class _MenuCell extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  tab.label,
+                  tab.label(context),
                   style: TextStyle(
                     color: textColor,
                     fontSize: isSelected ? 15 : 14,

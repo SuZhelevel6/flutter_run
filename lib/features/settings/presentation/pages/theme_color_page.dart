@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/settings/settings_cubit.dart';
+import '../../../../core/l10n/l10n.dart';
 
 /// 主题色设置页
 ///
@@ -26,9 +27,11 @@ class ThemeColorPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('主题色'),
+        title: Text(l10n.themeColorTitle),
         centerTitle: true,
       ),
       body: BlocBuilder<SettingsCubit, dynamic>(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/settings/settings_cubit.dart';
+import '../../../../core/l10n/l10n.dart';
 
 /// 深色模式设置页面
 ///
@@ -15,6 +16,7 @@ class ThemeModePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeColor = Theme.of(context).primaryColor;
+    final l10n = context.l10n;
 
     return BlocBuilder<SettingsCubit, dynamic>(
       builder: (context, state) {
@@ -23,7 +25,7 @@ class ThemeModePage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('深色模式'),
+            title: Text(l10n.themeModeTitle),
           ),
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
           body: Column(
@@ -41,32 +43,33 @@ class ThemeModePage extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: SwitchListTile(
-                    title: const Text(
-                      '跟随系统',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    title: Text(
+                      l10n.followSystem,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    subtitle: const Text(
-                      '自动根据系统设置切换主题',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    subtitle: Text(
+                      l10n.followSystemDesc,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     value: currentMode == ThemeMode.system,
-                    activeColor: themeColor,
+                    activeColor: themeColor.withAlpha(128),
+                    activeTrackColor: themeColor,
                     onChanged: (bool value) {
                       final newMode =
                           value ? ThemeMode.system : ThemeMode.light;
                       context.read<SettingsCubit>().setThemeMode(newMode);
                       _showSnackBar(
-                          context, value ? '已启用跟随系统' : '已关闭跟随系统');
+                          context, value ? l10n.followSystemEnabled : l10n.followSystemDisabled);
                     },
                   ),
                 ),
               ),
 
-              const Padding(
-                padding: EdgeInsets.only(left: 16, top: 16, bottom: 6),
+              Padding(
+                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 6),
                 child: Text(
-                  '手动设置',
-                  style: TextStyle(
+                  l10n.manualSettings,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: Colors.grey,
@@ -93,7 +96,7 @@ class ThemeModePage extends StatelessWidget {
                             context
                                 .read<SettingsCubit>()
                                 .setThemeMode(ThemeMode.light);
-                            _showSnackBar(context, '已切换到浅色模式');
+                            _showSnackBar(context, l10n.lightModeEnabled);
                           },
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
@@ -105,8 +108,8 @@ class ThemeModePage extends StatelessWidget {
                             ),
                             child: Row(
                               children: [
-                                const Expanded(
-                                  child: Text('浅色模式'),
+                                Expanded(
+                                  child: Text(l10n.lightMode),
                                 ),
                                 if (currentMode == ThemeMode.light)
                                   Icon(Icons.check, size: 20, color: themeColor),
@@ -126,7 +129,7 @@ class ThemeModePage extends StatelessWidget {
                             context
                                 .read<SettingsCubit>()
                                 .setThemeMode(ThemeMode.dark);
-                            _showSnackBar(context, '已切换到深色模式');
+                            _showSnackBar(context, l10n.darkModeEnabled);
                           },
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
@@ -138,8 +141,8 @@ class ThemeModePage extends StatelessWidget {
                             ),
                             child: Row(
                               children: [
-                                const Expanded(
-                                  child: Text('深色模式'),
+                                Expanded(
+                                  child: Text(l10n.darkModeOption),
                                 ),
                                 if (currentMode == ThemeMode.dark)
                                   Icon(Icons.check, size: 20, color: themeColor),

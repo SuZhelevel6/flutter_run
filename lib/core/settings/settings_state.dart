@@ -21,7 +21,7 @@ class SettingsState extends Equatable {
     this.themeMode = ThemeMode.system,
     this.themeColor = Colors.deepPurple,
     this.fontScale = 1.0,
-    this.languageCode,
+    this.languageCode = 'zh',  // 默认中文
   });
 
   /// 创建副本

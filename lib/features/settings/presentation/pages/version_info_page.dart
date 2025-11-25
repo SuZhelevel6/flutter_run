@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
+import '../../../../core/l10n/l10n.dart';
 
 /// 版本信息页
 ///
@@ -10,9 +11,11 @@ class VersionInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('版本信息'),
+        title: Text(l10n.versionInfoTitle),
         centerTitle: true,
       ),
       body: ListView(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/settings/settings_cubit.dart';
+import '../../../../core/l10n/l10n.dart';
 
 /// 语言设置页
 ///
@@ -10,49 +11,63 @@ class LanguageSettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final themeColor = Theme.of(context).primaryColor;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('语言设置'),
+        title: Text(l10n.languageSettingsTitle),
         centerTitle: true,
       ),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       body: BlocBuilder<SettingsCubit, dynamic>(
         builder: (context, state) {
           final cubit = context.read<SettingsCubit>();
           final currentLanguage = state.languageCode;
 
-          return ListView(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-              _LanguageOption(
-                title: '跟随系统',
-                subtitle: '使用系统语言设置',
-                languageCode: null,
-                currentLanguageCode: currentLanguage,
-                onTap: () => cubit.setLanguage(null),
-              ),
-              _LanguageOption(
-                title: '简体中文',
-                subtitle: 'Simplified Chinese',
-                languageCode: 'zh',
-                currentLanguageCode: currentLanguage,
-                onTap: () => cubit.setLanguage('zh'),
-              ),
-              _LanguageOption(
-                title: 'English',
-                subtitle: 'English',
-                languageCode: 'en',
-                currentLanguageCode: currentLanguage,
-                onTap: () => cubit.setLanguage('en'),
-              ),
-              const Divider(height: 32),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  '注意：语言切换功能需要配合国际化(i18n)使用。当���版本暂未完全支持多语言。',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey,
+
+              // 语言选项容器
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Column(
+                    children: [
+                      // 简体中文
+                      _LanguageOption(
+                        title: l10n.languageSimplifiedChinese,
+                        languageCode: 'zh',
+                        currentLanguageCode: currentLanguage ?? 'zh',  // 默认中文
+                        themeColor: themeColor,
+                        onTap: () {
+                          cubit.setLanguage('zh');
+                          _showSnackBar(context, l10n.languageChanged);
+                        },
                       ),
-                  textAlign: TextAlign.center,
+
+                      const Divider(height: 1, indent: 16, endIndent: 16),
+
+                      // English
+                      _LanguageOption(
+                        title: l10n.languageEnglish,
+                        languageCode: 'en',
+                        currentLanguageCode: currentLanguage ?? 'zh',  // 默认中文
+                        themeColor: themeColor,
+                        onTap: () {
+                          cubit.setLanguage('en');
+                          _showSnackBar(context, l10n.languageChanged);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -61,21 +76,30 @@ class LanguageSettingPage extends StatelessWidget {
       ),
     );
   }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
 }
 
 /// 语言选项组件
 class _LanguageOption extends StatelessWidget {
   final String title;
-  final String subtitle;
   final String? languageCode;
   final String? currentLanguageCode;
+  final Color themeColor;
   final VoidCallback onTap;
 
   const _LanguageOption({
     required this.title,
-    required this.subtitle,
     required this.languageCode,
     required this.currentLanguageCode,
+    required this.themeColor,
     required this.onTap,
   });
 
@@ -83,26 +107,29 @@ class _LanguageOption extends StatelessWidget {
   Widget build(BuildContext context) {
     final isSelected = languageCode == currentLanguageCode;
 
-    return ListTile(
-      leading: Icon(
-        Icons.language,
-        color: isSelected ? Theme.of(context).primaryColor : null,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? Theme.of(context).primaryColor : null,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(title),
+              ),
+              if (isSelected)
+                Icon(Icons.check, size: 20, color: themeColor),
+            ],
+          ),
         ),
       ),
-      subtitle: Text(subtitle),
-      trailing: isSelected
-          ? Icon(
-              Icons.check_circle,
-              color: Theme.of(context).primaryColor,
-            )
-          : null,
-      onTap: onTap,
     );
   }
 }

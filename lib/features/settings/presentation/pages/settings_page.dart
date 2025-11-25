@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_route.dart';
 import '../../../../core/settings/settings_cubit.dart';
+import '../../../../core/l10n/l10n.dart';
 
 /// 设置页面
 ///
@@ -14,9 +15,11 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('设置'),
+        title: Text(l10n.settings),
       ),
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       body: ListView(
@@ -29,19 +32,19 @@ class SettingsPage extends StatelessWidget {
               String themeModeLabel;
               switch (settings.themeMode) {
                 case ThemeMode.system:
-                  themeModeLabel = '跟随系统';
+                  themeModeLabel = l10n.followSystem;
                   break;
                 case ThemeMode.light:
-                  themeModeLabel = '浅色模式';
+                  themeModeLabel = l10n.lightMode;
                   break;
                 case ThemeMode.dark:
-                  themeModeLabel = '深色模式';
+                  themeModeLabel = l10n.darkModeOption;
                   break;
               }
 
               return _SettingItem(
                 icon: Icons.dark_mode,
-                title: '深色模式',
+                title: l10n.darkMode,
                 subtitle: themeModeLabel,
                 onTap: () {
                   context.push(AppRoute.settingsThemeMode.url);
@@ -58,8 +61,8 @@ class SettingsPage extends StatelessWidget {
               final settings = context.watch<SettingsCubit>().state;
               return _SettingItem(
                 icon: Icons.palette,
-                title: '主题色',
-                subtitle: '当前主题色',
+                title: l10n.themeColor,
+                subtitle: l10n.currentThemeColor,
                 subtitleColor: settings.themeColor,
                 onTap: () {
                   context.push(AppRoute.settingsThemeColor.url);
@@ -77,8 +80,8 @@ class SettingsPage extends StatelessWidget {
               final fontScalePercent = (settings.fontScale * 100).toInt();
               return _SettingItem(
                 icon: Icons.font_download,
-                title: '字体设置',
-                subtitle: '字体缩放 $fontScalePercent%',
+                title: l10n.fontSettings,
+                subtitle: '${l10n.fontScale} $fontScalePercent%',
                 onTap: () {
                   context.push(AppRoute.settingsFont.url);
                 },
@@ -89,12 +92,22 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 12),
 
           // 语言设置
-          _SettingItem(
-            icon: Icons.translate,
-            title: '语言设置',
-            subtitle: '简体中文（功能开发中）',
-            onTap: () {
-              context.push(AppRoute.settingsLanguage.url);
+          BlocBuilder<SettingsCubit, dynamic>(
+            builder: (context, state) {
+              final settings = context.watch<SettingsCubit>().state;
+              // 如果为 null 或 'zh'，显示中文；否则显示英文
+              String languageLabel = (settings.languageCode == 'en')
+                  ? l10n.languageEnglish
+                  : l10n.languageSimplifiedChinese;
+
+              return _SettingItem(
+                icon: Icons.translate,
+                title: l10n.languageSettings,
+                subtitle: languageLabel,
+                onTap: () {
+                  context.push(AppRoute.settingsLanguage.url);
+                },
+              );
             },
           ),
 
@@ -103,7 +116,7 @@ class SettingsPage extends StatelessWidget {
           // 版本信息
           _SettingItem(
             icon: Icons.info_outline,
-            title: '版本信息',
+            title: l10n.versionInfo,
             subtitle: 'v1.0.0',
             onTap: () {
               context.push(AppRoute.settingsVersion.url);
@@ -115,8 +128,8 @@ class SettingsPage extends StatelessWidget {
             const SizedBox(height: 12),
             _SettingItem(
               icon: Icons.bug_report,
-              title: '日志查看器',
-              subtitle: '开发模式 - 查看应用日志',
+              title: l10n.logViewer,
+              subtitle: l10n.logViewerSubtitle,
               subtitleColor: Colors.orange,
               onTap: () {
                 context.push(AppRoute.settingsLogs.url);

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../platform/platform_adapter.dart';
 import '../navigation/view/desktop/app_desk_navigation.dart';
 import '../app/splash/splash_page.dart';
 import '../settings/settings_cubit.dart';
+import '../l10n/l10n.dart';
 import '../../features/widget/presentation/pages/widget_page.dart';
 import '../../features/blog/presentation/pages/blog_page.dart';
 import '../../features/painter/presentation/pages/painter_page.dart';
@@ -160,10 +162,28 @@ class AppRouter {
           // 获取设置状态
           final settings = context.watch<SettingsCubit>().state;
 
+          // 根据语言代码确定 Locale
+          Locale? locale;
+          if (settings.languageCode != null) {
+            locale = Locale(settings.languageCode!);
+          }
+
           return MaterialApp.router(
             title: 'Flutter Run',
             debugShowCheckedModeBanner: false,
             routerConfig: router,
+            // 国际化配置
+            locale: locale,
+            localizationsDelegates: const [
+              AppLocalizationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('zh', 'CN'), // 简体中文
+              Locale('en', 'US'), // 英文
+            ],
             // 使用设置中的主题模式
             themeMode: settings.themeMode,
             // 亮色主题 - 使用设置中的主题色

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/settings/settings_cubit.dart';
+import '../../../../core/l10n/l10n.dart';
 
 /// 字体设置页
 ///
@@ -10,9 +11,11 @@ class FontSettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('字体设置'),
+        title: Text(l10n.fontSettingsTitle),
         centerTitle: true,
       ),
       body: BlocBuilder<SettingsCubit, dynamic>(
@@ -31,18 +34,13 @@ class FontSettingPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '预览效果',
+                        l10n.previewText,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        '这是一段示例文本，用于预览字体大小效果。',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'This is a sample text to preview font size effect.',
-                        style: TextStyle(fontSize: 14),
+                      Text(
+                        l10n.previewTextContent,
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ],
                   ),
@@ -52,7 +50,7 @@ class FontSettingPage extends StatelessWidget {
 
               // 字体大小滑块
               Text(
-                '字体缩放比例',
+                l10n.fontScale,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 16),
