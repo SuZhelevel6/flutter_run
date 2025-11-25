@@ -14,25 +14,15 @@ class DeskNavigationRail extends StatelessWidget {
     // 获取当前路由路径
     final location = GoRouterState.of(context).uri.path;
 
-    // 根据路径确定当前选中的索引
-    int selectedIndex = 0;
-    for (int i = 0; i < AppTab.values.length; i++) {
-      if (location.startsWith(AppTab.values[i].path)) {
-        selectedIndex = i;
-        break;
-      }
-    }
+    // 根据主题模式调整背景色
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark
+        ? const Color(0xff2C3036)  // 深色模式：深灰色
+        : const Color(0xffF5F5F5);  // 浅色模式：浅灰色
 
     return Container(
       width: 140,
-      decoration: BoxDecoration(
-        border: Border(
-          right: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 1,
-          ),
-        ),
-      ),
+      color: backgroundColor,
       child: Column(
         children: [
           // 顶部 Logo 区域
@@ -45,23 +35,18 @@ class DeskNavigationRail extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // 导航栏
+          // 导航菜单列表（使用 ListView 防止溢出）
           Expanded(
-            child: NavigationRail(
-              selectedIndex: selectedIndex,
-              labelType: NavigationRailLabelType.all,
-              destinations: AppTab.values
-                  .map(
-                    (tab) => NavigationRailDestination(
-                      icon: Icon(tab.icon),
-                      label: Text(tab.label),
-                    ),
-                  )
-                  .toList(),
-              onDestinationSelected: (index) {
-                final tab = AppTab.values[index];
-                context.go(tab.path);
-              },
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              children: AppTab.values.map((tab) {
+                final isSelected = location.startsWith(tab.path);
+                return _MenuCell(
+                  tab: tab,
+                  isSelected: isSelected,
+                  onTap: () => context.go(tab.path),
+                );
+              }).toList(),
             ),
           ),
 
@@ -75,6 +60,80 @@ class DeskNavigationRail extends StatelessWidget {
           ),
           const SizedBox(height: 16),
         ],
+      ),
+    );
+  }
+}
+
+/// 菜单项单元格
+class _MenuCell extends StatelessWidget {
+  final AppTab tab;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _MenuCell({
+    required this.tab,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // 根据主题模式调整颜色
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final backgroundColor = isSelected
+        ? Theme.of(context).primaryColor
+        : (isDark
+            ? Colors.white.withAlpha(33)  // 深色模式：半透明白色
+            : Colors.black.withAlpha(26)); // 浅色模式：半透明黑色
+
+    final iconColor = isSelected
+        ? Colors.white
+        : (isDark ? Colors.white70 : Colors.black54);
+
+    final textColor = isSelected
+        ? Colors.white
+        : (isDark ? Colors.white70 : Colors.black54);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.only(left: 12),
+          height: 42,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(21),
+              bottomRight: Radius.circular(21),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                tab.icon,
+                color: iconColor,
+                size: isSelected ? 22 : 18,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  tab.label,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: isSelected ? 15 : 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

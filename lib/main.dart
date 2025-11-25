@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'core/logging/talker_config.dart';
 import 'core/logging/app_bloc_observer.dart';
@@ -11,21 +12,45 @@ import 'core/router/app_router.dart';
 /// 这是一个基于 Clean Architecture 的 Flutter 应用
 ///
 /// 启动流程:
-/// 1. 初始化 Talker 日志系统
-/// 2. 配置 BLoC 观察器
-/// 3. 打印平台信息（开发环境）
-/// 4. 启动应用
-void main() {
-  // 1. 初始化日志系统（必须最早）
+/// 1. 初始化 Flutter Widgets Binding
+/// 2. 初始化窗口管理器（桌面端）
+/// 3. 初始化 Talker 日志系统
+/// 4. 配置 BLoC 观察器
+/// 5. 打印平台信息（开发环境）
+/// 6. 启动应用
+void main() async {
+  // 1. 确保 Flutter Widgets Binding 已初始化
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 2. 初始化窗口管理器（仅桌面平台）
+  if (PlatformAdapter.isDesktop) {
+    await windowManager.ensureInitialized();
+
+    const windowOptions = WindowOptions(
+      size: Size(1200, 800),
+      minimumSize: Size(800, 600),
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.hidden, // 隐藏原生标题栏
+    );
+
+    await windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+
+  // 3. 初始化日志系统
   TalkerConfig.init();
 
-  // 2. 配置 BLoC 观察器
+  // 4. 配置 BLoC 观察器
   Bloc.observer = AppBlocObserver();
 
-  // 3. 打印平台信息（开发环境）
+  // 5. 打印平台信息（开发环境）
   PlatformAdapter.printPlatformInfo();
 
-  // 4. 启动应用
+  // 6. 启动应用
   runApp(const MyApp());
 }
 
