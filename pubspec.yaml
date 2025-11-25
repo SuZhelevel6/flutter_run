@@ -18,7 +18,7 @@ dependencies:
 
   # ==================== UI 组件 ====================
   cupertino_icons: ^1.0.8          # iOS 图标
-  window_manager: ^0.4.3           # 桌面窗口管理（可选）
+  window_manager: ^0.5.1           # 桌面窗口管理（可选）
   url_launcher: ^6.3.1             # URL 启动器
 
   # ==================== 网络请求 ====================
@@ -31,7 +31,7 @@ dependencies:
   equatable: ^2.0.5                # 相等性比较
 
   # ==================== 路由管理 ====================
-  go_router: ^14.7.0               # 声明式路由
+  go_router: ^17.0.0               # 声明式路由
 
   # ==================== 应用启动 ====================
   fx_boot_starter: ^0.1.1          # 启动框架（可选）
@@ -50,8 +50,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^5.0.0            # Lint 规则
-  flutter_launcher_icons: ^0.13.1  # 图标生成
+  flutter_lints: ^6.0.0            # Lint 规则
+  flutter_launcher_icons: ^0.14.4  # 图标生成
   flutter_native_splash: ^2.3.7    # 启动屏生成
   build_runner: ^2.4.9             # 代码生成器
   json_serializable: ^6.9.0        # JSON 序列化
