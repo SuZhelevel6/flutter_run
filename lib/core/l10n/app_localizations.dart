@@ -57,6 +57,18 @@ abstract class AppLocalizations {
   String get customColor;
   String get themeColorChanged;
 
+  // 主题色名称
+  String get themeColorRed;
+  String get themeColorOrange;
+  String get themeColorYellow;
+  String get themeColorGreen;
+  String get themeColorBlue;
+  String get themeColorIndigo;
+  String get themeColorPurple;
+  String get themeColorDeepPurple;
+  String get themeColorTeal;
+  String get themeColorCyan;
+
   // ==================== 字体设置 ====================
   String get fontSettingsTitle;
   String get fontScale;

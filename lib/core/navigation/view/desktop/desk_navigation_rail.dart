@@ -43,7 +43,15 @@ class DeskNavigationRail extends StatelessWidget {
             'Flutter Run',
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
+          // 分割线（应用名与菜单项之间）
+          Divider(
+            color: isDark ? Colors.white24 : Colors.black12,
+            height: 1,
+            indent: 20,
+            endIndent: 20,
+          ),
+          const SizedBox(height: 8),
 
           // 导航菜单列表（使用 ListView 防止溢出）
           Expanded(

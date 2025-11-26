@@ -5,25 +5,11 @@ import '../../../../core/l10n/l10n.dart';
 
 /// 主题色设置页
 ///
-/// 选择应用主题颜色
+/// 参考 FlutterPlay: ThemeColorPage
+/// 使用网格布局展示所有可用的主题色
+/// 点击可切换主题色
 class ThemeColorPage extends StatelessWidget {
   const ThemeColorPage({super.key});
-
-  /// 预设的主题色列表
-  static const List<Color> _presetColors = [
-    Colors.deepPurple,
-    Colors.blue,
-    Colors.teal,
-    Colors.green,
-    Colors.orange,
-    Colors.red,
-    Colors.pink,
-    Colors.indigo,
-    Colors.cyan,
-    Colors.amber,
-    Colors.brown,
-    Colors.blueGrey,
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -32,29 +18,37 @@ class ThemeColorPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.themeColorTitle),
-        centerTitle: true,
       ),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       body: BlocBuilder<SettingsCubit, dynamic>(
         builder: (context, state) {
-          final cubit = context.read<SettingsCubit>();
           final currentColor = state.themeColor;
 
           return GridView.builder(
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
+              crossAxisCount: 3,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 1.2,
             ),
-            itemCount: _presetColors.length,
+            itemCount: _ThemeColorType.values.length,
             itemBuilder: (context, index) {
-              final color = _presetColors[index];
-              final isSelected = color.toARGB32() == currentColor.toARGB32();
+              final colorType = _ThemeColorType.values[index];
+              final isSelected = colorType.color.value == currentColor.value;
 
-              return _ColorOption(
-                color: color,
+              return _ThemeColorCell(
+                colorType: colorType,
                 isSelected: isSelected,
-                onTap: () => cubit.setThemeColor(color),
+                onTap: () {
+                  context.read<SettingsCubit>().setThemeColor(colorType.color);
+                  // 延迟返回以便用户看到选中效果
+                  Future.delayed(const Duration(milliseconds: 300), () {
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  });
+                },
               );
             },
           );
@@ -64,50 +58,154 @@ class ThemeColorPage extends StatelessWidget {
   }
 }
 
-/// 颜色选项组件
-class _ColorOption extends StatelessWidget {
-  final Color color;
+/// 主题色单元格组件
+class _ThemeColorCell extends StatelessWidget {
+  final _ThemeColorType colorType;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _ColorOption({
-    required this.color,
+  const _ThemeColorCell({
+    required this.colorType,
     required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(12),
-          border: isSelected
-              ? Border.all(
-                  color: Colors.white,
-                  width: 4,
-                )
-              : null,
-          boxShadow: [
-            BoxShadow(
-              color: color.withAlpha(100),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+    final color = colorType.color;
+    final l10n = context.l10n;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [
+                color.shade50,
+                color.shade100,
+                color.shade200,
+                color.shade300,
+                color.shade400,
+                color.shade500,
+                color.shade600,
+                color.shade700,
+                color.shade800,
+                color.shade900,
+              ],
             ),
-          ],
-        ),
-        child: isSelected
-            ? const Center(
-                child: Icon(
-                  Icons.check_circle,
-                  color: Colors.white,
-                  size: 32,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(13),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              // 顶部标题栏
+              Container(
+                height: 36,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
+                  color: isSelected
+                      ? Colors.blue.withAlpha(128)
+                      : Colors.grey.withAlpha(77),
                 ),
-              )
-            : null,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Spacer(),
+                    Text(
+                      colorType.colorHex,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const Spacer(),
+                    if (isSelected)
+                      const Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Icon(
+                          Icons.check_circle,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              // 中间文字
+              Center(
+                child: Text(
+                  colorType.label(l10n),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
+  }
+}
+
+/// 主题色类型枚举
+///
+/// 参考 FlutterPlay 的 ThemeColorType
+enum _ThemeColorType {
+  red(Colors.red),
+  orange(Colors.orange),
+  yellow(Colors.yellow),
+  green(Colors.green),
+  blue(Colors.blue),
+  indigo(Colors.indigo),
+  purple(Colors.purple),
+  deepPurple(Colors.deepPurple),
+  teal(Colors.teal),
+  cyan(Colors.cyan);
+
+  final MaterialColor color;
+
+  const _ThemeColorType(this.color);
+
+  /// 获取本地化标签
+  String label(AppLocalizations l10n) {
+    return switch (this) {
+      _ThemeColorType.red => l10n.themeColorRed,
+      _ThemeColorType.orange => l10n.themeColorOrange,
+      _ThemeColorType.yellow => l10n.themeColorYellow,
+      _ThemeColorType.green => l10n.themeColorGreen,
+      _ThemeColorType.blue => l10n.themeColorBlue,
+      _ThemeColorType.indigo => l10n.themeColorIndigo,
+      _ThemeColorType.purple => l10n.themeColorPurple,
+      _ThemeColorType.deepPurple => l10n.themeColorDeepPurple,
+      _ThemeColorType.teal => l10n.themeColorTeal,
+      _ThemeColorType.cyan => l10n.themeColorCyan,
+    };
+  }
+
+  /// 获取色值字符串 (用于显示)
+  String get colorHex {
+    return '#${color.value.toRadixString(16).padLeft(8, '0').toUpperCase()}';
   }
 }
