@@ -108,6 +108,17 @@ abstract class AppLocalizations {
   // ==================== 提示信息 ====================
   String get featureInDevelopment;
   String get comingSoon;
+
+  // ==================== Widget 集录 ====================
+  String get widgetShowcase;
+  String get widgetCategoryStateless;
+  String get widgetCategoryStateful;
+  String get widgetCategoryOther;
+  String get widgetPreview;
+  String get widgetSampleCode;
+  String get copyCode;
+  String get codeCopied;
+  String get noWidgets;
 }
 
 /// 国际化委托

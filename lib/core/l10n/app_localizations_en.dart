@@ -218,4 +218,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get comingSoon => 'Coming soon';
+
+  // ==================== Widget Showcase ====================
+  @override
+  String get widgetShowcase => 'Widget Showcase';
+
+  @override
+  String get widgetCategoryStateless => 'Stateless';
+
+  @override
+  String get widgetCategoryStateful => 'Stateful';
+
+  @override
+  String get widgetCategoryOther => 'Other';
+
+  @override
+  String get widgetPreview => 'Preview';
+
+  @override
+  String get widgetSampleCode => 'Sample Code';
+
+  @override
+  String get copyCode => 'Copy Code';
+
+  @override
+  String get codeCopied => 'Code copied';
+
+  @override
+  String get noWidgets => 'No widgets available';
 }

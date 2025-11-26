@@ -218,4 +218,32 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get comingSoon => '敬请期待';
+
+  // ==================== Widget 集录 ====================
+  @override
+  String get widgetShowcase => 'Widget 集录';
+
+  @override
+  String get widgetCategoryStateless => '无态组件';
+
+  @override
+  String get widgetCategoryStateful => '有态组件';
+
+  @override
+  String get widgetCategoryOther => '其他组件';
+
+  @override
+  String get widgetPreview => '预览效果';
+
+  @override
+  String get widgetSampleCode => '示例代码';
+
+  @override
+  String get copyCode => '复制代码';
+
+  @override
+  String get codeCopied => '代码已复制';
+
+  @override
+  String get noWidgets => '暂无组件';
 }
