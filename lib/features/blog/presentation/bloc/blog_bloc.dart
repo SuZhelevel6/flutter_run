@@ -14,29 +14,30 @@ import 'blog_state.dart';
 /// 3. 处理结果并发出新状态 (BlogState)
 /// 4. 管理分页加载逻辑
 ///
-/// 数据流:
-/// ```
-/// UI 发送 Event
-///      ↓
-/// Bloc 接收 Event
-///      ↓
-/// Bloc 调用 Repository
-///      ↓
-/// Repository 返回 Result
-///      ↓
-/// Bloc 处理 Result
-///      ↓
-/// Bloc 发出新 State
-///      ↓
-/// UI 根据 State 更新
+///工作流程：
+///1. UI 调用 bloc.add(LoadBlogData())
+///       ↓
+///2. BLoC 接收到事件，查找事件类型
+///       ↓
+///3. 发现是 LoadBlogData 类型
+///       ↓
+///4. 根据 on<LoadBlogData>(_onLoadBlogData) 注册关系
+///       ↓
+///5. 调用 _onLoadBlogData 方法处理
+///       ↓
+///6. _onLoadBlogData 执行业务逻辑，发出新状态
+///       ↓
+///7. UI 监听到新状态，更新界面
 /// ```
 class BlogBloc extends Bloc<BlogEvent, BlogState> {
   final BlogRepository _repository;
 
+  //创建 BlogBloc 时必须传入一个 Repository 实例，初始化状态是BlogInitial
   BlogBloc(this._repository) : super(const BlogInitial()) {
     on<LoadBlogData>(_onLoadBlogData);
     on<RefreshBlogData>(_onRefreshBlogData);
     on<LoadMoreArticles>(_onLoadMoreArticles);
+    //  ↑ 泛型指定事件类型    ↑ 处理这个事件的方法
   }
 
   /// 处理加载博客数据事件

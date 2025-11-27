@@ -6,22 +6,22 @@ enum AppRoute {
   /// Splash 启动页
   splash('/', url: '/'),
 
-  /// Widget 展示页
+  /// 组件集录-展示页
   widget('/widget', url: '/widget'),
 
-  /// Blog 文章页
+  /// 博客文章页
   blog('/blog', url: '/blog'),
 
-  /// Painter 画板页
+  /// 绘制集录页
   painter('/painter', url: '/painter'),
 
-  /// Knowledge 知识页
+  /// 知识集锦页
   knowledge('/knowledge', url: '/knowledge'),
 
-  /// Tools 工具页
+  /// 工具宝箱页
   tools('/tools', url: '/tools'),
 
-  /// Account 账户页
+  /// 应用信息页
   account('/account', url: '/account'),
 
   /// Settings 设置页
