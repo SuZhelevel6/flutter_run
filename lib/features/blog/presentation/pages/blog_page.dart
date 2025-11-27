@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_run/core/l10n/l10n.dart';
-import '../../../../core/network/api_client.dart';
-import '../../data/datasources/blog_remote_datasource.dart';
-import '../../data/repositories/blog_repository_impl.dart';
+import '../../../../core/di/injection.dart';
 import '../bloc/blog_bloc.dart';
 import '../bloc/blog_event.dart';
 import '../bloc/blog_state.dart';
@@ -25,11 +23,9 @@ class BlogPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => BlogBloc(
-        BlogRepositoryImpl(
-          BlogRemoteDataSourceImpl(ApiClient()),
-        ),
-      )..add(const LoadBlogData()),
+      // 通过 getIt 获取 BlogBloc 实例
+      // BlogBloc 在 injection.dart 中注册为 Factory，每次调用创建新实例
+      create: (context) => getIt<BlogBloc>()..add(const LoadBlogData()),
       child: const _BlogContent(),
     );
   }

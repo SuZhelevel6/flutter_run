@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+import '../di/injection.dart';
 import '../platform/platform_adapter.dart';
 import '../navigation/view/desktop/app_desk_navigation.dart';
 import '../app/splash/splash_page.dart';
@@ -154,9 +155,9 @@ class AppRouter {
   static Widget createRouterApp() {
     final router = createRouter();
 
-    // 创建全局的 SettingsCubit 实例
-    return BlocProvider(
-      create: (context) => SettingsCubit()..init(),
+    // 通过 getIt 获取全局 SettingsCubit 单例
+    return BlocProvider.value(
+      value: getIt<SettingsCubit>()..init(),
       child: BlocBuilder<SettingsCubit, dynamic>(
         builder: (context, settingsState) {
           // 获取设置状态
