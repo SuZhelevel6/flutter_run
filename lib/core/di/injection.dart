@@ -8,6 +8,8 @@ import '../../features/blog/data/datasources/blog_remote_datasource.dart';
 import '../../features/blog/data/repositories/blog_repository_impl.dart';
 import '../../features/blog/domain/repositories/blog_repository.dart';
 import '../../features/blog/presentation/bloc/blog_bloc.dart';
+import '../../features/settings/data/repositories/settings_repository_impl.dart';
+import '../../features/settings/domain/repositories/settings_repository.dart';
 
 /// 全局依赖注入容器实例
 ///
@@ -78,10 +80,15 @@ void _setupBlogModule() {
 
 /// 配置 Settings 模块依赖
 void _setupSettingsModule() {
+  // Repository - 仓储 (单例)
+  getIt.registerLazySingleton<SettingsRepository>(
+    () => SettingsRepositoryImpl(getIt<SharedPreferences>()),
+  );
+
   // SettingsCubit - 设置状态管理 (单例)
   // 使用单例是因为设置是全局共享的
   getIt.registerLazySingleton<SettingsCubit>(
-    () => SettingsCubit(),
+    () => SettingsCubit(getIt<SettingsRepository>()),
   );
 }
 
