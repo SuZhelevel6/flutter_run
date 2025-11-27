@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
-import '../di/injection.dart';
 import '../platform/platform_adapter.dart';
 import '../navigation/view/desktop/app_desk_navigation.dart';
 import '../app/splash/splash_page.dart';
-import '../settings/settings_cubit.dart';
-import '../l10n/l10n.dart';
 import '../../features/widget/presentation/pages/widget_page.dart';
 import '../../features/blog/presentation/pages/blog_page.dart';
 import '../../features/painter/presentation/pages/painter_page.dart';
@@ -24,7 +19,12 @@ import '../../features/settings/presentation/pages/log_viewer_page.dart';
 
 /// AppRouter: 应用路由配置
 ///
-/// 使用 ShellRoute 实现导航栏外壳
+/// 职责单一：仅负责路由配置
+/// - 定义所有路由路径和页面映射
+/// - 配置 ShellRoute 导航外壳
+/// - 处理路由错误
+///
+/// 注意：应用配置（主题、国际化、全局状态）由 FxApplication 负责
 class AppRouter {
   /// 主体路由列表
   static List<RouteBase> get _bodyRoutes => [
@@ -148,78 +148,4 @@ class AppRouter {
     );
   }
 
-  /// 创建 MaterialApp.router 实例
-  ///
-  /// 用于 FxApplication，返回一个使用 GoRouter 的 MaterialApp.router
-  /// Splash 页面通过路由显示，初始路由为 "/"
-  static Widget createRouterApp() {
-    final router = createRouter();
-
-    // 通过 getIt 获取全局 SettingsCubit 单例
-    return BlocProvider.value(
-      value: getIt<SettingsCubit>()..init(),
-      child: BlocBuilder<SettingsCubit, dynamic>(
-        builder: (context, settingsState) {
-          // 获取设置状态
-          final settings = context.watch<SettingsCubit>().state;
-
-          // 根据语言代码确定 Locale
-          Locale? locale;
-          if (settings.languageCode != null) {
-            locale = Locale(settings.languageCode!);
-          }
-
-          return MaterialApp.router(
-            title: 'Flutter Run',
-            debugShowCheckedModeBanner: false,
-            routerConfig: router,
-            // 国际化配置
-            locale: locale,
-            localizationsDelegates: const [
-              AppLocalizationsDelegate(),
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [
-              Locale('zh', 'CN'), // 简体中文
-              Locale('en', 'US'), // 英文
-            ],
-            // 使用设置中的主题模式
-            themeMode: settings.themeMode,
-            // 亮色主题 - 使用设置中的主题色
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: settings.themeColor),
-              useMaterial3: true,
-              appBarTheme: const AppBarTheme(
-                centerTitle: true,
-                elevation: 0,
-              ),
-            ),
-            // 暗色主题 - 使用设置中的主题色
-            darkTheme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: settings.themeColor,
-                brightness: Brightness.dark,
-              ),
-              useMaterial3: true,
-              appBarTheme: const AppBarTheme(
-                centerTitle: true,
-                elevation: 0,
-              ),
-            ),
-            // 字体缩放
-            builder: (context, child) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaler: TextScaler.linear(settings.fontScale),
-                ),
-                child: child!,
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
 }

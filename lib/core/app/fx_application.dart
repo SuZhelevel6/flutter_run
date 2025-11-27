@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_run/core/logging/app_logger.dart';
 import 'package:fx_boot_starter/fx_boot_starter.dart';
 
 import 'app_config.dart';
 import 'app_start_repository.dart';
+import '../di/injection.dart';
 import '../router/app_router.dart';
+import '../settings/settings_cubit.dart';
+import '../settings/settings_state.dart';
+import '../l10n/l10n.dart';
 import '../logging/app_bloc_observer.dart';
 
 /// FxApplication: 应用启动器
 ///
 /// 混入 FxStarter 框架，负责整个应用的启动生命周期管理
-/// 参考 FlutterUnit: lib/src/starter/fx_application.dart
+///
+/// 职责：
+/// 1. 应用配置（主题、国际化、字体缩放）
+/// 2. 全局状态管理（SettingsCubit）
+/// 3. 启动生命周期回调
 ///
 /// 启动流程:
 /// 1. main() 调用 run()
@@ -24,9 +33,86 @@ class FxApplication with FxStarter<AppConfig> {
   const FxApplication();
 
   /// 必须实现: 根 Widget
-  /// 返回一个使用 GoRouter 的 MaterialApp.router
+  ///
+  /// 职责：
+  /// - 注入全局 SettingsCubit
+  /// - 配置 MaterialApp（主题、国际化、路由）
   @override
-  Widget get app => AppRouter.createRouterApp();
+  Widget get app => _buildApp();
+
+  /// 构建应用根 Widget
+  Widget _buildApp() {
+    final router = AppRouter.createRouter();
+
+    // 通过 getIt 获取全局 SettingsCubit 单例
+    return BlocProvider.value(
+      value: getIt<SettingsCubit>()..init(),
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, settings) {
+          // 根据语言代码确定 Locale
+          Locale? locale;
+          if (settings.languageCode != null) {
+            locale = Locale(settings.languageCode!);
+          }
+
+          return MaterialApp.router(
+            title: 'Flutter Run',
+            debugShowCheckedModeBanner: false,
+            routerConfig: router,
+
+            // ==================== 国际化配置 ====================
+            locale: locale,
+            localizationsDelegates: const [
+              AppLocalizationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('zh', 'CN'), // 简体中文
+              Locale('en', 'US'), // 英文
+            ],
+
+            // ==================== 主题配置 ====================
+            themeMode: settings.themeMode,
+
+            // 亮色主题
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: settings.themeColor),
+              useMaterial3: true,
+              appBarTheme: const AppBarTheme(
+                centerTitle: true,
+                elevation: 0,
+              ),
+            ),
+
+            // 暗色主题
+            darkTheme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: settings.themeColor,
+                brightness: Brightness.dark,
+              ),
+              useMaterial3: true,
+              appBarTheme: const AppBarTheme(
+                centerTitle: true,
+                elevation: 0,
+              ),
+            ),
+
+            // ==================== 字体缩放 ====================
+            builder: (context, child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(settings.fontScale),
+                ),
+                child: child!,
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
 
   /// 必须实现: 启动数据仓库
   /// 负责执行启动时的异步任务
