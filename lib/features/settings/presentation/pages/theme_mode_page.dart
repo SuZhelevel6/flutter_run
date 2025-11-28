@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/settings/settings_cubit.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../widgets/settings_section.dart';
+import '../widgets/settings_option_tile.dart';
 
 /// 深色模式设置页面
 ///
@@ -34,35 +36,10 @@ class ThemeModePage extends StatelessWidget {
               const SizedBox(height: 15),
 
               // 跟随系统开关
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SwitchListTile(
-                    title: Text(
-                      l10n.followSystem,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      l10n.followSystemDesc,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                    value: currentMode == ThemeMode.system,
-                    activeColor: themeColor.withAlpha(128),
-                    activeTrackColor: themeColor,
-                    onChanged: (bool value) {
-                      final newMode =
-                          value ? ThemeMode.system : ThemeMode.light;
-                      context.read<SettingsCubit>().setThemeMode(newMode);
-                      _showSnackBar(
-                          context, value ? l10n.followSystemEnabled : l10n.followSystemDisabled);
-                    },
-                  ),
-                ),
+              _SystemModeSwitch(
+                currentMode: currentMode,
+                themeColor: themeColor,
+                l10n: l10n,
               ),
 
               Padding(
@@ -77,83 +54,28 @@ class ThemeModePage extends StatelessWidget {
                 ),
               ),
 
-              // 手动设置容器
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Column(
-                    children: [
-                      // 浅色模式
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            context
-                                .read<SettingsCubit>()
-                                .setThemeMode(ThemeMode.light);
-                            _showSnackBar(context, l10n.lightModeEnabled);
-                          },
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          hoverColor: Colors.transparent,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(l10n.lightMode),
-                                ),
-                                if (currentMode == ThemeMode.light)
-                                  Icon(Icons.check, size: 20, color: themeColor),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const Divider(height: 1, indent: 16, endIndent: 16),
-
-                      // 深色模式
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            context
-                                .read<SettingsCubit>()
-                                .setThemeMode(ThemeMode.dark);
-                            _showSnackBar(context, l10n.darkModeEnabled);
-                          },
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          hoverColor: Colors.transparent,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(l10n.darkModeOption),
-                                ),
-                                if (currentMode == ThemeMode.dark)
-                                  Icon(Icons.check, size: 20, color: themeColor),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+              // 手动设置选项
+              SettingsSection(
+                children: [
+                  SettingsOptionTile(
+                    title: l10n.lightMode,
+                    isSelected: currentMode == ThemeMode.light,
+                    checkColor: themeColor,
+                    onTap: () {
+                      context.read<SettingsCubit>().setThemeMode(ThemeMode.light);
+                      _showSnackBar(context, l10n.lightModeEnabled);
+                    },
                   ),
-                ),
+                  SettingsOptionTile(
+                    title: l10n.darkModeOption,
+                    isSelected: currentMode == ThemeMode.dark,
+                    checkColor: themeColor,
+                    onTap: () {
+                      context.read<SettingsCubit>().setThemeMode(ThemeMode.dark);
+                      _showSnackBar(context, l10n.darkModeEnabled);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -167,6 +89,59 @@ class ThemeModePage extends StatelessWidget {
       SnackBar(
         content: Text(message),
         duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+}
+
+/// 跟随系统模式开关
+class _SystemModeSwitch extends StatelessWidget {
+  final ThemeMode currentMode;
+  final Color themeColor;
+  final AppLocalizations l10n;
+
+  const _SystemModeSwitch({
+    required this.currentMode,
+    required this.themeColor,
+    required this.l10n,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(12);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Material(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: borderRadius,
+        clipBehavior: Clip.antiAlias,
+        child: SwitchListTile(
+          shape: RoundedRectangleBorder(borderRadius: borderRadius),
+          title: Text(
+            l10n.followSystem,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            l10n.followSystemDesc,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          value: currentMode == ThemeMode.system,
+          activeColor: themeColor.withAlpha(128),
+          activeTrackColor: themeColor,
+          onChanged: (bool value) {
+            final newMode = value ? ThemeMode.system : ThemeMode.light;
+            context.read<SettingsCubit>().setThemeMode(newMode);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  value ? l10n.followSystemEnabled : l10n.followSystemDisabled,
+                ),
+                duration: const Duration(seconds: 1),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
