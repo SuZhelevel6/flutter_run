@@ -3,7 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/injection.dart';
 import '../cubit/whiteboard_cubit.dart';
+import '../cubit/whiteboard_state.dart';
+import '../widgets/color_picker.dart';
+import '../widgets/stroke_width_picker.dart';
 import '../widgets/whiteboard_canvas.dart';
+import '../widgets/whiteboard_toolbar.dart';
 
 /// 会议白板页面
 ///
@@ -42,47 +46,110 @@ class _PainterPageContent extends StatelessWidget {
         centerTitle: true,
         actions: [
           // 撤销按钮
-          BlocBuilder<WhiteboardCubit, dynamic>(
-            buildWhen: (prev, curr) => prev.canUndo != curr.canUndo,
-            builder: (context, state) {
+          BlocSelector<WhiteboardCubit, WhiteboardState, bool>(
+            selector: (state) => state.canUndo,
+            builder: (context, canUndo) {
               return IconButton(
                 icon: const Icon(Icons.undo),
-                onPressed: state.canUndo
-                    ? () => context.read<WhiteboardCubit>().undo()
-                    : null,
+                onPressed:
+                    canUndo ? () => context.read<WhiteboardCubit>().undo() : null,
                 tooltip: '撤销',
               );
             },
           ),
           // 重做按钮
-          BlocBuilder<WhiteboardCubit, dynamic>(
-            buildWhen: (prev, curr) => prev.canRedo != curr.canRedo,
-            builder: (context, state) {
+          BlocSelector<WhiteboardCubit, WhiteboardState, bool>(
+            selector: (state) => state.canRedo,
+            builder: (context, canRedo) {
               return IconButton(
                 icon: const Icon(Icons.redo),
-                onPressed: state.canRedo
-                    ? () => context.read<WhiteboardCubit>().redo()
-                    : null,
+                onPressed:
+                    canRedo ? () => context.read<WhiteboardCubit>().redo() : null,
                 tooltip: '重做',
               );
             },
           ),
           // 清空按钮
-          BlocBuilder<WhiteboardCubit, dynamic>(
-            buildWhen: (prev, curr) => prev.isEmpty != curr.isEmpty,
-            builder: (context, state) {
+          BlocSelector<WhiteboardCubit, WhiteboardState, bool>(
+            selector: (state) => state.isEmpty,
+            builder: (context, isEmpty) {
               return IconButton(
                 icon: const Icon(Icons.delete_outline),
-                onPressed: state.isEmpty
-                    ? null
-                    : () => _showClearConfirmDialog(context),
+                onPressed: isEmpty ? null : () => _showClearConfirmDialog(context),
                 tooltip: '清空',
               );
             },
           ),
         ],
       ),
-      body: const WhiteboardCanvas(),
+      body: Stack(
+        children: [
+          // 画布
+          const WhiteboardCanvas(),
+
+          // 顶部工具栏
+          Positioned(
+            top: 16,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const WhiteboardToolbar(),
+                    const SizedBox(width: 16),
+                    const ColorPicker(),
+                    const SizedBox(width: 16),
+                    const StrokeWidthPicker(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // 底部快捷栏（移动端适配）
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: _buildBottomBar(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 构建底部快捷栏
+  Widget _buildBottomBar(BuildContext context) {
+    // 检测是否为窄屏（移动端）
+    final isNarrowScreen = MediaQuery.of(context).size.width < 600;
+
+    if (!isNarrowScreen) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          MiniColorPicker(),
+          MiniStrokeWidthPicker(),
+        ],
+      ),
     );
   }
 
