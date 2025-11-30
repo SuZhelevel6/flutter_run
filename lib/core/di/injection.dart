@@ -8,6 +8,7 @@ import '../../features/blog/data/datasources/blog_remote_datasource.dart';
 import '../../features/blog/data/repositories/blog_repository_impl.dart';
 import '../../features/blog/domain/repositories/blog_repository.dart';
 import '../../features/blog/presentation/bloc/blog_bloc.dart';
+import '../../features/painter/presentation/cubit/whiteboard_cubit.dart';
 import '../../features/settings/data/repositories/settings_repository_impl.dart';
 import '../../features/settings/domain/repositories/settings_repository.dart';
 
@@ -57,6 +58,9 @@ Future<void> setupDependencies() async {
 
   // ==================== Settings 模块 ====================
   _setupSettingsModule();
+
+  // ==================== Painter 模块 ====================
+  _setupPainterModule();
 }
 
 /// 配置 Blog 模块依赖
@@ -89,6 +93,15 @@ void _setupSettingsModule() {
   // 使用单例是因为设置是全局共享的
   getIt.registerLazySingleton<SettingsCubit>(
     () => SettingsCubit(getIt<SettingsRepository>()),
+  );
+}
+
+/// 配置 Painter 模块依赖
+void _setupPainterModule() {
+  // WhiteboardCubit - 白板状态管理 (工厂)
+  // 使用 Factory 是因为每次进入白板页面需要独立的状态实例
+  getIt.registerFactory<WhiteboardCubit>(
+    () => WhiteboardCubit(),
   );
 }
 
