@@ -42,45 +42,49 @@ class _PainterPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 撤销按钮
+            BlocSelector<WhiteboardCubit, WhiteboardState, bool>(
+              selector: (state) => state.canUndo,
+              builder: (context, canUndo) {
+                return IconButton(
+                  icon: const Icon(Icons.undo),
+                  onPressed:
+                      canUndo ? () => context.read<WhiteboardCubit>().undo() : null,
+                  tooltip: '撤销',
+                );
+              },
+            ),
+            // 重做按钮
+            BlocSelector<WhiteboardCubit, WhiteboardState, bool>(
+              selector: (state) => state.canRedo,
+              builder: (context, canRedo) {
+                return IconButton(
+                  icon: const Icon(Icons.redo),
+                  onPressed:
+                      canRedo ? () => context.read<WhiteboardCubit>().redo() : null,
+                  tooltip: '重做',
+                );
+              },
+            ),
+            // 清空按钮
+            BlocSelector<WhiteboardCubit, WhiteboardState, bool>(
+              selector: (state) => state.isEmpty,
+              builder: (context, isEmpty) {
+                return IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: isEmpty ? null : () => _showClearConfirmDialog(context),
+                  tooltip: '清空',
+                );
+              },
+            ),
+          ],
+        ),
+        leadingWidth: 144,
         title: const Text('会议白板'),
         centerTitle: true,
-        actions: [
-          // 撤销按钮
-          BlocSelector<WhiteboardCubit, WhiteboardState, bool>(
-            selector: (state) => state.canUndo,
-            builder: (context, canUndo) {
-              return IconButton(
-                icon: const Icon(Icons.undo),
-                onPressed:
-                    canUndo ? () => context.read<WhiteboardCubit>().undo() : null,
-                tooltip: '撤销',
-              );
-            },
-          ),
-          // 重做按钮
-          BlocSelector<WhiteboardCubit, WhiteboardState, bool>(
-            selector: (state) => state.canRedo,
-            builder: (context, canRedo) {
-              return IconButton(
-                icon: const Icon(Icons.redo),
-                onPressed:
-                    canRedo ? () => context.read<WhiteboardCubit>().redo() : null,
-                tooltip: '重做',
-              );
-            },
-          ),
-          // 清空按钮
-          BlocSelector<WhiteboardCubit, WhiteboardState, bool>(
-            selector: (state) => state.isEmpty,
-            builder: (context, isEmpty) {
-              return IconButton(
-                icon: const Icon(Icons.delete_outline),
-                onPressed: isEmpty ? null : () => _showClearConfirmDialog(context),
-                tooltip: '清空',
-              );
-            },
-          ),
-        ],
       ),
       body: Stack(
         children: [
