@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/l10n/l10n.dart';
 import '../../domain/models/quick_action.dart';
 
 /// 快捷入口区域
@@ -19,6 +20,7 @@ class QuickActionsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,14 +30,14 @@ class QuickActionsSection extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.flash_on,
                 size: 20,
                 color: Colors.orange,
               ),
               const SizedBox(width: 8),
               Text(
-                '快捷入口',
+                l10n.workspaceQuickActions,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -103,7 +105,7 @@ class _QuickActionCard extends StatelessWidget {
               const SizedBox(height: 8),
               // 标签
               Text(
-                action.label,
+                _getLocalizedLabel(context),
                 style: theme.textTheme.labelMedium,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -115,14 +117,31 @@ class _QuickActionCard extends StatelessWidget {
     );
   }
 
+  String _getLocalizedLabel(BuildContext context) {
+    final l10n = context.l10n;
+    switch (action.type) {
+      case QuickActionType.whiteboard:
+        return l10n.workspaceActionWhiteboard;
+      case QuickActionType.screenCast:
+        return l10n.workspaceActionScreencast;
+      case QuickActionType.documents:
+        return l10n.workspaceActionDocuments;
+      case QuickActionType.settings:
+        return l10n.workspaceActionSettings;
+      case QuickActionType.more:
+        return l10n.workspaceActionMore;
+    }
+  }
+
   void _handleTap(BuildContext context) {
     if (action.routePath != null) {
       context.go(action.routePath!);
     } else {
       // 显示功能暂未开放提示
+      final l10n = context.l10n;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${action.label}功能暂未开放'),
+          content: Text(l10n.workspaceFeatureNotAvailable(_getLocalizedLabel(context))),
           duration: const Duration(seconds: 1),
         ),
       );

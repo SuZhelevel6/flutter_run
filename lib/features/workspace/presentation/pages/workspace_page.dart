@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/injection.dart';
+import '../../../../core/l10n/l10n.dart';
 import '../../domain/models/meeting_group.dart';
 import '../cubit/workspace_cubit.dart';
 import '../cubit/workspace_state.dart';
@@ -19,8 +20,8 @@ import '../widgets/quick_actions_section.dart';
 /// - SliverPersistentHeader 实现日期吸顶效果
 /// - SliverToBoxAdapter 嵌入普通 Widget
 /// - BlocProvider 提供状态管理
-class KnowledgePage extends StatelessWidget {
-  const KnowledgePage({super.key});
+class WorkspacePage extends StatelessWidget {
+  const WorkspacePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,13 +59,13 @@ class _LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
-          Text('正在加载会议...'),
+          const CircularProgressIndicator(),
+          const SizedBox(height: 16),
+          Text(context.l10n.workspaceLoading),
         ],
       ),
     );
@@ -80,6 +81,7 @@ class _ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return Center(
       child: Column(
@@ -92,12 +94,12 @@ class _ErrorView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            '加载失败',
+            l10n.workspaceLoadFailed,
             style: theme.textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
           Text(
-            '请检查网络连接后重试',
+            l10n.workspaceCheckNetwork,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -106,7 +108,7 @@ class _ErrorView extends StatelessWidget {
           FilledButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('重试'),
+            label: Text(l10n.workspaceRetry),
           ),
         ],
       ),
@@ -137,7 +139,7 @@ class _SuccessView extends StatelessWidget {
           // 问候语头部
           SliverToBoxAdapter(
             child: GreetingHeader(
-              greeting: state.greeting,
+              greetingType: state.greetingType,
               meetingCount: state.todayMeetingCount,
               currentTime: state.currentTime,
             ),
@@ -168,7 +170,7 @@ class _SuccessView extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '会议日程',
+                    context.l10n.workspaceMeetingSchedule,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -243,6 +245,7 @@ class _EmptyMeetingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return Center(
       child: Column(
@@ -255,14 +258,14 @@ class _EmptyMeetingsView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            '暂无会议安排',
+            l10n.workspaceNoMeetings,
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            '享受轻松的一天吧！',
+            l10n.workspaceEnjoyYourDay,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

@@ -6,7 +6,7 @@ import '../app/splash/splash_page.dart';
 import '../../features/widget/presentation/pages/widget_page.dart';
 import '../../features/blog/presentation/pages/blog_page.dart';
 import '../../features/painter/presentation/pages/painter_page.dart';
-import '../../features/knowledge/presentation/pages/knowledge_page.dart';
+import '../../features/workspace/presentation/pages/workspace_page.dart';
 import '../../features/tools/presentation/pages/tools_page.dart';
 import '../../features/account/presentation/pages/account_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
@@ -46,8 +46,8 @@ class AppRouter {
           builder: (context, state) => const PainterPage(),
         ),
         GoRoute(
-          path: '/knowledge',
-          builder: (context, state) => const KnowledgePage(),
+          path: '/workspace',
+          builder: (context, state) => const WorkspacePage(),
         ),
         GoRoute(
           path: '/tools',

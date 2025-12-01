@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/l10n/l10n.dart';
 import '../../domain/models/meeting.dart';
 
 /// 会议卡片组件
@@ -50,7 +51,7 @@ class MeetingCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 第一行：状态标签 + 时间
-              _buildHeader(theme),
+              _buildHeader(context, theme),
               const SizedBox(height: 12),
 
               // 第二行：会议标题
@@ -71,7 +72,7 @@ class MeetingCard extends StatelessWidget {
               ],
 
               // 第四行：参会人
-              _buildAttendees(theme),
+              _buildAttendees(context, theme),
             ],
           ),
         ),
@@ -80,7 +81,8 @@ class MeetingCard extends StatelessWidget {
   }
 
   /// 构建头部：状态标签 + 时间
-  Widget _buildHeader(ThemeData theme) {
+  Widget _buildHeader(BuildContext context, ThemeData theme) {
+    final l10n = context.l10n;
     return Row(
       children: [
         // 状态标签
@@ -115,7 +117,7 @@ class MeetingCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
-            '${meeting.durationMinutes}分钟',
+            l10n.workspaceMeetingDuration(meeting.durationMinutes),
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -146,7 +148,7 @@ class MeetingCard extends StatelessWidget {
   }
 
   /// 构建参会人信息
-  Widget _buildAttendees(ThemeData theme) {
+  Widget _buildAttendees(BuildContext context, ThemeData theme) {
     return Row(
       children: [
         // 头像堆叠
@@ -156,7 +158,7 @@ class MeetingCard extends StatelessWidget {
         // 参会人摘要
         Expanded(
           child: Text(
-            meeting.attendeesSummary,
+            _getAttendeesSummary(context),
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -168,11 +170,24 @@ class MeetingCard extends StatelessWidget {
     );
   }
 
+  String _getAttendeesSummary(BuildContext context) {
+    final l10n = context.l10n;
+    final attendees = meeting.attendees;
+
+    if (attendees.isEmpty) return l10n.workspaceNoAttendees;
+    if (attendees.length <= 3) {
+      return attendees.map((a) => a.name).join('、');
+    }
+    final names = attendees.take(3).map((a) => a.name).join('、');
+    return l10n.workspaceAttendeesAndMore(names, attendees.length);
+  }
+
   /// 显示会议详情（临时实现）
   void _showMeetingDetails(BuildContext context) {
+    final l10n = context.l10n;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('查看会议：${meeting.title}'),
+        content: Text(l10n.workspaceViewMeeting(meeting.title)),
         duration: const Duration(seconds: 1),
       ),
     );
@@ -208,23 +223,24 @@ class _StatusLabel extends StatelessWidget {
 
   (String, Color, Color) _getStatusStyle(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     switch (status) {
       case MeetingStatus.ongoing:
         return (
-          '进行中',
+          l10n.workspaceMeetingStatusOngoing,
           Colors.white,
           theme.colorScheme.primary,
         );
       case MeetingStatus.upcoming:
         return (
-          '即将开始',
+          l10n.workspaceMeetingStatusUpcoming,
           theme.colorScheme.tertiary,
           theme.colorScheme.tertiaryContainer,
         );
       case MeetingStatus.ended:
         return (
-          '已结束',
+          l10n.workspaceMeetingStatusEnded,
           theme.colorScheme.onSurfaceVariant,
           theme.colorScheme.surfaceContainerHighest,
         );

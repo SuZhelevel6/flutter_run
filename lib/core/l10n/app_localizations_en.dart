@@ -18,7 +18,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navPainter => 'Painter';
 
   @override
-  String get navKnowledge => 'Knowledge';
+  String get navWorkspace => 'Workspace';
 
   @override
   String get navTools => 'Tools';
@@ -246,4 +246,184 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noWidgets => 'No widgets available';
+
+  // ==================== Painter Module ====================
+  @override
+  String get painterTitle => 'Whiteboard';
+
+  @override
+  String get painterUndo => 'Undo';
+
+  @override
+  String get painterRedo => 'Redo';
+
+  @override
+  String get painterClear => 'Clear';
+
+  @override
+  String get painterClearCanvasTitle => 'Clear Canvas';
+
+  @override
+  String get painterClearCanvasMessage => 'Are you sure you want to clear all content? This action can be undone.';
+
+  @override
+  String get painterToolPen => 'Pen';
+
+  @override
+  String get painterToolEraser => 'Eraser';
+
+  @override
+  String get painterToolLine => 'Line';
+
+  @override
+  String get painterToolArrow => 'Arrow';
+
+  @override
+  String get painterToolRectangle => 'Rectangle';
+
+  @override
+  String get painterToolCircle => 'Circle';
+
+  @override
+  String get painterSelectColor => 'Select Color';
+
+  @override
+  String get painterStrokeWidth => 'Stroke Width';
+
+  @override
+  String painterStrokeWidthValue(int value) => 'Stroke Width: ${value}px';
+
+  // ==================== Workspace Module ====================
+  @override
+  String get workspaceLoading => 'Loading meetings...';
+
+  @override
+  String get workspaceLoadFailed => 'Load Failed';
+
+  @override
+  String get workspaceCheckNetwork => 'Please check your network and try again';
+
+  @override
+  String get workspaceRetry => 'Retry';
+
+  @override
+  String get workspaceGreetingLateNight => 'Late night';
+
+  @override
+  String get workspaceGreetingMorning => 'Good morning';
+
+  @override
+  String get workspaceGreetingForenoon => 'Good forenoon';
+
+  @override
+  String get workspaceGreetingNoon => 'Good noon';
+
+  @override
+  String get workspaceGreetingAfternoon => 'Good afternoon';
+
+  @override
+  String get workspaceGreetingEvening => 'Good evening';
+
+  @override
+  String get workspaceRoomName => 'Meeting Room 3';
+
+  @override
+  String workspaceMeetingCount(int count) => 'You have $count meetings today';
+
+  @override
+  String get workspaceNoMeetingToday => 'No meetings scheduled today';
+
+  @override
+  String get workspaceQuickActions => 'Quick Actions';
+
+  @override
+  String get workspaceMeetingSchedule => 'Meeting Schedule';
+
+  @override
+  String get workspaceNoMeetings => 'No meetings scheduled';
+
+  @override
+  String get workspaceEnjoyYourDay => 'Enjoy your day!';
+
+  @override
+  String get workspaceTodayMeetings => 'Today';
+
+  @override
+  String get workspaceTomorrowMeetings => 'Tomorrow';
+
+  @override
+  String workspaceMeetingCountUnit(int count) => '$count meetings';
+
+  @override
+  String workspaceMeetingDuration(int minutes) => '${minutes}min';
+
+  @override
+  String get workspaceMeetingStatusOngoing => 'Ongoing';
+
+  @override
+  String get workspaceMeetingStatusUpcoming => 'Upcoming';
+
+  @override
+  String get workspaceMeetingStatusEnded => 'Ended';
+
+  @override
+  String workspaceViewMeeting(String title) => 'View meeting: $title';
+
+  @override
+  String get workspaceNoAttendees => 'No attendees';
+
+  @override
+  String workspaceAttendeesAndMore(String names, int count) => '$names and $count others';
+
+  @override
+  String get workspaceActionWhiteboard => 'Whiteboard';
+
+  @override
+  String get workspaceActionScreencast => 'Screen Cast';
+
+  @override
+  String get workspaceActionDocuments => 'Documents';
+
+  @override
+  String get workspaceActionSettings => 'Settings';
+
+  @override
+  String get workspaceActionMore => 'More';
+
+  @override
+  String workspaceFeatureNotAvailable(String feature) => '$feature is not available yet';
+
+  // ==================== Common ====================
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonConfirm => 'Confirm';
+
+  @override
+  String get commonWeekdayMon => 'Mon';
+
+  @override
+  String get commonWeekdayTue => 'Tue';
+
+  @override
+  String get commonWeekdayWed => 'Wed';
+
+  @override
+  String get commonWeekdayThu => 'Thu';
+
+  @override
+  String get commonWeekdayFri => 'Fri';
+
+  @override
+  String get commonWeekdaySat => 'Sat';
+
+  @override
+  String get commonWeekdaySun => 'Sun';
+
+  @override
+  String formatMonthDay(int month, int day) => 'M$month D$day';
+
+  @override
+  String formatMonthDayWeekday(int month, int day, String weekday) => 'M$month D$day $weekday';
 }

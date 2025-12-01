@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/l10n/l10n.dart';
 import '../cubit/whiteboard_cubit.dart';
 import '../cubit/whiteboard_state.dart';
 
@@ -144,7 +145,7 @@ class MiniColorPicker extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          tooltip: '选择颜色',
+          tooltip: context.l10n.painterSelectColor,
           child: Container(
             width: 36,
             height: 36,

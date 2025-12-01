@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/l10n/l10n.dart';
 import '../../domain/models/meeting_group.dart';
 
 /// 日期标题吸顶代理
@@ -33,6 +34,7 @@ class DateHeaderDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return Container(
       height: maxExtent,
@@ -61,7 +63,7 @@ class DateHeaderDelegate extends SliverPersistentHeaderDelegate {
           const SizedBox(width: 8),
           // 日期标题
           Text(
-            meetingGroup.formattedTitle,
+            _getFormattedTitle(context),
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: _getTitleColor(theme),
@@ -71,7 +73,7 @@ class DateHeaderDelegate extends SliverPersistentHeaderDelegate {
           // 完整日期
           if (!meetingGroup.isToday && !meetingGroup.isTomorrow)
             Text(
-              meetingGroup.formattedDate,
+              _getFormattedDate(context),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -85,7 +87,7 @@ class DateHeaderDelegate extends SliverPersistentHeaderDelegate {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              '${meetingGroup.meetingCount} 场',
+              l10n.workspaceMeetingCountUnit(meetingGroup.meetingCount),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onPrimaryContainer,
               ),
@@ -94,6 +96,29 @@ class DateHeaderDelegate extends SliverPersistentHeaderDelegate {
         ],
       ),
     );
+  }
+
+  String _getFormattedTitle(BuildContext context) {
+    final l10n = context.l10n;
+    if (meetingGroup.isToday) return l10n.workspaceTodayMeetings;
+    if (meetingGroup.isTomorrow) return l10n.workspaceTomorrowMeetings;
+    return l10n.formatMonthDay(meetingGroup.date.month, meetingGroup.date.day);
+  }
+
+  String _getFormattedDate(BuildContext context) {
+    final l10n = context.l10n;
+    final date = meetingGroup.date;
+    final weekdays = [
+      l10n.commonWeekdayMon,
+      l10n.commonWeekdayTue,
+      l10n.commonWeekdayWed,
+      l10n.commonWeekdayThu,
+      l10n.commonWeekdayFri,
+      l10n.commonWeekdaySat,
+      l10n.commonWeekdaySun,
+    ];
+    final weekday = weekdays[date.weekday - 1];
+    return l10n.formatMonthDayWeekday(date.month, date.day, weekday);
   }
 
   Color _getTitleColor(ThemeData theme) {

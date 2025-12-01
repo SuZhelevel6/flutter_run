@@ -18,7 +18,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get navPainter => '绘制集录';
 
   @override
-  String get navKnowledge => '知识集锦';
+  String get navWorkspace => '会议工作台';
 
   @override
   String get navTools => '工具宝箱';
@@ -246,4 +246,184 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noWidgets => '暂无组件';
+
+  // ==================== Painter 模块 ====================
+  @override
+  String get painterTitle => '画板';
+
+  @override
+  String get painterUndo => '撤销';
+
+  @override
+  String get painterRedo => '重做';
+
+  @override
+  String get painterClear => '清空';
+
+  @override
+  String get painterClearCanvasTitle => '清空画布';
+
+  @override
+  String get painterClearCanvasMessage => '确定要清空所有内容吗？此操作可以撤销。';
+
+  @override
+  String get painterToolPen => '画笔';
+
+  @override
+  String get painterToolEraser => '橡皮擦';
+
+  @override
+  String get painterToolLine => '直线';
+
+  @override
+  String get painterToolArrow => '箭头';
+
+  @override
+  String get painterToolRectangle => '矩形';
+
+  @override
+  String get painterToolCircle => '圆形';
+
+  @override
+  String get painterSelectColor => '选择颜色';
+
+  @override
+  String get painterStrokeWidth => '线条粗细';
+
+  @override
+  String painterStrokeWidthValue(int value) => '线条粗细: ${value}px';
+
+  // ==================== Workspace 模块 ====================
+  @override
+  String get workspaceLoading => '正在加载会议...';
+
+  @override
+  String get workspaceLoadFailed => '加载失败';
+
+  @override
+  String get workspaceCheckNetwork => '请检查网络连接后重试';
+
+  @override
+  String get workspaceRetry => '重试';
+
+  @override
+  String get workspaceGreetingLateNight => '夜深了';
+
+  @override
+  String get workspaceGreetingMorning => '早上好';
+
+  @override
+  String get workspaceGreetingForenoon => '上午好';
+
+  @override
+  String get workspaceGreetingNoon => '中午好';
+
+  @override
+  String get workspaceGreetingAfternoon => '下午好';
+
+  @override
+  String get workspaceGreetingEvening => '晚上好';
+
+  @override
+  String get workspaceRoomName => '3号会议室';
+
+  @override
+  String workspaceMeetingCount(int count) => '今天有 $count 场会议';
+
+  @override
+  String get workspaceNoMeetingToday => '今天暂无会议安排';
+
+  @override
+  String get workspaceQuickActions => '快捷入口';
+
+  @override
+  String get workspaceMeetingSchedule => '会议日程';
+
+  @override
+  String get workspaceNoMeetings => '暂无会议安排';
+
+  @override
+  String get workspaceEnjoyYourDay => '享受轻松的一天吧！';
+
+  @override
+  String get workspaceTodayMeetings => '今日会议';
+
+  @override
+  String get workspaceTomorrowMeetings => '明日会议';
+
+  @override
+  String workspaceMeetingCountUnit(int count) => '$count 场';
+
+  @override
+  String workspaceMeetingDuration(int minutes) => '$minutes分钟';
+
+  @override
+  String get workspaceMeetingStatusOngoing => '进行中';
+
+  @override
+  String get workspaceMeetingStatusUpcoming => '即将开始';
+
+  @override
+  String get workspaceMeetingStatusEnded => '已结束';
+
+  @override
+  String workspaceViewMeeting(String title) => '查看会议：$title';
+
+  @override
+  String get workspaceNoAttendees => '暂无参会人';
+
+  @override
+  String workspaceAttendeesAndMore(String names, int count) => '$names 等${count}人';
+
+  @override
+  String get workspaceActionWhiteboard => '白板';
+
+  @override
+  String get workspaceActionScreencast => '投屏';
+
+  @override
+  String get workspaceActionDocuments => '文档';
+
+  @override
+  String get workspaceActionSettings => '设置';
+
+  @override
+  String get workspaceActionMore => '更多';
+
+  @override
+  String workspaceFeatureNotAvailable(String feature) => '$feature功能暂未开放';
+
+  // ==================== 通用 ====================
+  @override
+  String get commonCancel => '取消';
+
+  @override
+  String get commonConfirm => '确定';
+
+  @override
+  String get commonWeekdayMon => '周一';
+
+  @override
+  String get commonWeekdayTue => '周二';
+
+  @override
+  String get commonWeekdayWed => '周三';
+
+  @override
+  String get commonWeekdayThu => '周四';
+
+  @override
+  String get commonWeekdayFri => '周五';
+
+  @override
+  String get commonWeekdaySat => '周六';
+
+  @override
+  String get commonWeekdaySun => '周日';
+
+  @override
+  String formatMonthDay(int month, int day) => '$month月$day日';
+
+  @override
+  String formatMonthDayWeekday(int month, int day, String weekday) => '$month月$day日 $weekday';
 }

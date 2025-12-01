@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/l10n/l10n.dart';
 import '../cubit/whiteboard_cubit.dart';
 import '../cubit/whiteboard_state.dart';
 
@@ -111,7 +112,7 @@ class MiniStrokeWidthPicker extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          tooltip: '线条粗细',
+          tooltip: context.l10n.painterStrokeWidth,
           child: Container(
             width: 36,
             height: 36,
@@ -149,7 +150,7 @@ class MiniStrokeWidthPicker extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '线条粗细: ${state.currentStrokeWidth.toInt()}px',
+                        context.l10n.painterStrokeWidthValue(state.currentStrokeWidth.toInt()),
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                       const SizedBox(height: 8),

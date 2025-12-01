@@ -18,12 +18,35 @@ enum LoadingStatus {
   failure,
 }
 
+/// 问候语类型枚举
+///
+/// 用于在 Cubit 中表示问候类型，UI 层根据类型获取国际化字符串
+enum GreetingType {
+  /// 深夜 (22:00 - 06:00)
+  lateNight,
+
+  /// 早上 (06:00 - 09:00)
+  morning,
+
+  /// 上午 (09:00 - 12:00)
+  forenoon,
+
+  /// 中午 (12:00 - 14:00)
+  noon,
+
+  /// 下午 (14:00 - 18:00)
+  afternoon,
+
+  /// 晚上 (18:00 - 22:00)
+  evening,
+}
+
 /// 会议工作台状态
 ///
 /// 管理工作台页面的所有状态
 class WorkspaceState extends Equatable {
-  /// 问候语
-  final String greeting;
+  /// 问候语类型
+  final GreetingType greetingType;
 
   /// 当前时间
   final DateTime currentTime;
@@ -44,7 +67,7 @@ class WorkspaceState extends Equatable {
   final String? errorMessage;
 
   const WorkspaceState({
-    this.greeting = '',
+    this.greetingType = GreetingType.morning,
     required this.currentTime,
     this.todayMeetingCount = 0,
     this.quickActions = const [],
@@ -75,7 +98,7 @@ class WorkspaceState extends Equatable {
 
   /// 创建副本
   WorkspaceState copyWith({
-    String? greeting,
+    GreetingType? greetingType,
     DateTime? currentTime,
     int? todayMeetingCount,
     List<QuickAction>? quickActions,
@@ -84,7 +107,7 @@ class WorkspaceState extends Equatable {
     String? Function()? errorMessage,
   }) {
     return WorkspaceState(
-      greeting: greeting ?? this.greeting,
+      greetingType: greetingType ?? this.greetingType,
       currentTime: currentTime ?? this.currentTime,
       todayMeetingCount: todayMeetingCount ?? this.todayMeetingCount,
       quickActions: quickActions ?? this.quickActions,
@@ -96,7 +119,7 @@ class WorkspaceState extends Equatable {
 
   @override
   List<Object?> get props => [
-        greeting,
+        greetingType,
         currentTime,
         todayMeetingCount,
         quickActions,

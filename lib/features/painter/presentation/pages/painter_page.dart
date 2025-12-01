@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/injection.dart';
+import '../../../../core/l10n/l10n.dart';
 import '../cubit/whiteboard_cubit.dart';
 import '../cubit/whiteboard_state.dart';
 import '../widgets/color_picker.dart';
@@ -53,7 +54,7 @@ class _PainterPageContent extends StatelessWidget {
                   icon: const Icon(Icons.undo),
                   onPressed:
                       canUndo ? () => context.read<WhiteboardCubit>().undo() : null,
-                  tooltip: '撤销',
+                  tooltip: context.l10n.painterUndo,
                 );
               },
             ),
@@ -65,7 +66,7 @@ class _PainterPageContent extends StatelessWidget {
                   icon: const Icon(Icons.redo),
                   onPressed:
                       canRedo ? () => context.read<WhiteboardCubit>().redo() : null,
-                  tooltip: '重做',
+                  tooltip: context.l10n.painterRedo,
                 );
               },
             ),
@@ -76,14 +77,14 @@ class _PainterPageContent extends StatelessWidget {
                 return IconButton(
                   icon: const Icon(Icons.delete_outline),
                   onPressed: isEmpty ? null : () => _showClearConfirmDialog(context),
-                  tooltip: '清空',
+                  tooltip: context.l10n.painterClear,
                 );
               },
             ),
           ],
         ),
         leadingWidth: 144,
-        title: const Text('会议白板'),
+        title: Text(context.l10n.painterTitle),
         centerTitle: true,
       ),
       body: Stack(
@@ -159,23 +160,24 @@ class _PainterPageContent extends StatelessWidget {
 
   /// 显示清空确认对话框
   void _showClearConfirmDialog(BuildContext context) {
+    final l10n = context.l10n;
     showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('清空画布'),
-          content: const Text('确定要清空所有内容吗？此操作可以撤销。'),
+          title: Text(l10n.painterClearCanvasTitle),
+          content: Text(l10n.painterClearCanvasMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('取消'),
+              child: Text(l10n.commonCancel),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop(true);
                 context.read<WhiteboardCubit>().clearCanvas();
               },
-              child: const Text('清空'),
+              child: Text(l10n.painterClear),
             ),
           ],
         );

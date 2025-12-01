@@ -8,9 +8,9 @@ import '../../features/blog/data/datasources/blog_remote_datasource.dart';
 import '../../features/blog/data/repositories/blog_repository_impl.dart';
 import '../../features/blog/domain/repositories/blog_repository.dart';
 import '../../features/blog/presentation/bloc/blog_bloc.dart';
-import '../../features/knowledge/data/repositories/meeting_repository_impl.dart';
-import '../../features/knowledge/domain/repositories/meeting_repository.dart';
-import '../../features/knowledge/presentation/cubit/workspace_cubit.dart';
+import '../../features/workspace/data/repositories/meeting_repository_impl.dart';
+import '../../features/workspace/domain/repositories/meeting_repository.dart';
+import '../../features/workspace/presentation/cubit/workspace_cubit.dart';
 import '../../features/painter/presentation/cubit/whiteboard_cubit.dart';
 import '../../features/settings/data/repositories/settings_repository_impl.dart';
 import '../../features/settings/domain/repositories/settings_repository.dart';
@@ -65,8 +65,8 @@ Future<void> setupDependencies() async {
   // ==================== Painter 模块 ====================
   _setupPainterModule();
 
-  // ==================== Knowledge 模块 ====================
-  _setupKnowledgeModule();
+  // ==================== Workspace 模块 ====================
+  _setupWorkspaceModule();
 }
 
 /// 配置 Blog 模块依赖
@@ -111,8 +111,8 @@ void _setupPainterModule() {
   );
 }
 
-/// 配置 Knowledge 模块依赖
-void _setupKnowledgeModule() {
+/// 配置 Workspace 模块依赖
+void _setupWorkspaceModule() {
   // Repository - 仓储 (单例)
   getIt.registerLazySingleton<MeetingRepository>(
     () => MeetingRepositoryImpl(),

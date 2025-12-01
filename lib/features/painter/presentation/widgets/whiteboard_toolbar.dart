@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/l10n/l10n.dart';
 import '../../domain/models/whiteboard_tool.dart';
 import '../cubit/whiteboard_cubit.dart';
 import '../cubit/whiteboard_state.dart';
@@ -32,44 +33,45 @@ class WhiteboardToolbar extends StatelessWidget {
       child: BlocSelector<WhiteboardCubit, WhiteboardState, WhiteboardTool>(
         selector: (state) => state.currentTool,
         builder: (context, currentTool) {
+          final l10n = context.l10n;
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               _ToolButton(
                 tool: WhiteboardTool.pen,
                 icon: Icons.edit,
-                label: '画笔',
+                label: l10n.painterToolPen,
                 isSelected: currentTool == WhiteboardTool.pen,
               ),
               _ToolButton(
                 tool: WhiteboardTool.eraser,
                 icon: Icons.auto_fix_high,
-                label: '橡皮擦',
+                label: l10n.painterToolEraser,
                 isSelected: currentTool == WhiteboardTool.eraser,
               ),
               const _ToolDivider(),
               _ToolButton(
                 tool: WhiteboardTool.line,
                 icon: Icons.horizontal_rule,
-                label: '直线',
+                label: l10n.painterToolLine,
                 isSelected: currentTool == WhiteboardTool.line,
               ),
               _ToolButton(
                 tool: WhiteboardTool.arrow,
                 icon: Icons.arrow_forward,
-                label: '箭头',
+                label: l10n.painterToolArrow,
                 isSelected: currentTool == WhiteboardTool.arrow,
               ),
               _ToolButton(
                 tool: WhiteboardTool.rectangle,
                 icon: Icons.rectangle_outlined,
-                label: '矩形',
+                label: l10n.painterToolRectangle,
                 isSelected: currentTool == WhiteboardTool.rectangle,
               ),
               _ToolButton(
                 tool: WhiteboardTool.circle,
                 icon: Icons.circle_outlined,
-                label: '圆形',
+                label: l10n.painterToolCircle,
                 isSelected: currentTool == WhiteboardTool.circle,
               ),
             ],

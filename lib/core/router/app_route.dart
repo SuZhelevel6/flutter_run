@@ -15,8 +15,8 @@ enum AppRoute {
   /// 绘制集录页
   painter('/painter', url: '/painter'),
 
-  /// 知识集锦页
-  knowledge('/knowledge', url: '/knowledge'),
+  /// 会议工作台页
+  workspace('/workspace', url: '/workspace'),
 
   /// 工具宝箱页
   tools('/tools', url: '/tools'),

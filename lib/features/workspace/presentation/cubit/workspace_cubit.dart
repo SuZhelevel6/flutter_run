@@ -62,29 +62,29 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
     await loadMeetings();
   }
 
-  /// 更新问候语
+  /// 更新问候语类型
   void _updateGreeting() {
     final hour = DateTime.now().hour;
-    String greeting;
+    GreetingType greetingType;
 
     if (hour < 6) {
-      greeting = '夜深了';
+      greetingType = GreetingType.lateNight;
     } else if (hour < 9) {
-      greeting = '早上好';
+      greetingType = GreetingType.morning;
     } else if (hour < 12) {
-      greeting = '上午好';
+      greetingType = GreetingType.forenoon;
     } else if (hour < 14) {
-      greeting = '中午好';
+      greetingType = GreetingType.noon;
     } else if (hour < 18) {
-      greeting = '下午好';
+      greetingType = GreetingType.afternoon;
     } else if (hour < 22) {
-      greeting = '晚上好';
+      greetingType = GreetingType.evening;
     } else {
-      greeting = '夜深了';
+      greetingType = GreetingType.lateNight;
     }
 
     emit(state.copyWith(
-      greeting: greeting,
+      greetingType: greetingType,
       currentTime: DateTime.now(),
     ));
   }

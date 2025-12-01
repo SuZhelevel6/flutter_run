@@ -9,7 +9,7 @@ enum AppTab {
   widget('/widget', Icons.widgets_outlined),
   blog('/blog', Icons.article_outlined),
   painter('/painter', Icons.brush_outlined),
-  knowledge('/knowledge', Icons.school_outlined),
+  workspace('/workspace', Icons.work_outlined),
   tools('/tools', Icons.build_outlined),
   account('/account', Icons.person_outlined);
 
@@ -28,8 +28,8 @@ enum AppTab {
         return l10n.navBlog;
       case AppTab.painter:
         return l10n.navPainter;
-      case AppTab.knowledge:
-        return l10n.navKnowledge;
+      case AppTab.workspace:
+        return l10n.navWorkspace;
       case AppTab.tools:
         return l10n.navTools;
       case AppTab.account:
