@@ -39,32 +39,30 @@ class WorkspaceSkeleton extends StatelessWidget {
       highlightColor: highlightColor,
       child: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 问候语头部骨架
-              const _GreetingHeaderSkeleton(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 问候语头部骨架
+            const _GreetingHeaderSkeleton(),
 
-              // 快捷入口骨架
-              const _QuickActionsSkeleton(),
+            // 快捷入口骨架
+            const _QuickActionsSkeleton(),
 
-              // 分隔线
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: _SkeletonBox(height: 1, width: double.infinity),
-              ),
+            // 分隔线
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: _SkeletonBox(height: 1, width: double.infinity),
+            ),
 
-              // 会议列表标题骨架
-              const _SectionTitleSkeleton(),
+            // 会议列表标题骨架
+            const _SectionTitleSkeleton(),
 
-              // 日期头部骨架
-              const _DateHeaderSkeleton(),
+            // 日期头部骨架
+            const _DateHeaderSkeleton(),
 
-              // 会议卡片骨架（显示 3 张）
-              for (int i = 0; i < 3; i++) const _MeetingCardSkeleton(),
-            ],
-          ),
+            // 会议卡片骨架（显示 3 张）
+            for (int i = 0; i < 3; i++) const _MeetingCardSkeleton(),
+          ],
         ),
       ),
     );

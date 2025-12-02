@@ -37,19 +37,28 @@ class WorkspacePage extends StatelessWidget {
 class _WorkspaceView extends StatelessWidget {
   const _WorkspaceView();
 
+  /// 顶部额外间距（用于避开自定义功能按钮）
+  static const double _topExtraPadding = 48;
+
   @override
   Widget build(BuildContext context) {
+    // 计算顶部总间距：系统状态栏 + 自定义按钮区域
+    final topPadding = MediaQuery.of(context).padding.top + _topExtraPadding;
+
     return Scaffold(
-      body: BlocBuilder<WorkspaceCubit, WorkspaceState>(
-        builder: (context, state) {
-          return switch (state.status) {
-            LoadingStatus.initial || LoadingStatus.loading => const _LoadingView(),
-            LoadingStatus.failure => _ErrorView(
-                onRetry: () => context.read<WorkspaceCubit>().loadMeetings(),
-              ),
-            LoadingStatus.success => _SuccessView(state: state),
-          };
-        },
+      body: Padding(
+        padding: EdgeInsets.only(top: topPadding),
+        child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
+          builder: (context, state) {
+            return switch (state.status) {
+              LoadingStatus.initial || LoadingStatus.loading => const _LoadingView(),
+              LoadingStatus.failure => _ErrorView(
+                  onRetry: () => context.read<WorkspaceCubit>().loadMeetings(),
+                ),
+              LoadingStatus.success => _SuccessView(state: state),
+            };
+          },
+        ),
       ),
     );
   }
@@ -126,14 +135,6 @@ class _SuccessView extends StatelessWidget {
       onRefresh: () => context.read<WorkspaceCubit>().loadMeetings(),
       child: CustomScrollView(
         slivers: [
-          // 顶部安全区域
-          const SliverToBoxAdapter(
-            child: SafeArea(
-              bottom: false,
-              child: SizedBox.shrink(),
-            ),
-          ),
-
           // 问候语头部（时间显示已使用 LiveTimeDisplay 局部刷新）
           SliverToBoxAdapter(
             child: GreetingHeader(
