@@ -20,6 +20,7 @@ dependencies:
   cupertino_icons: ^1.0.8          # iOS 图标
   window_manager: ^0.5.1           # 桌面窗口管理（可选）
   url_launcher: ^6.3.1             # URL 启动器
+  shimmer: ^3.0.0                  # 骨架屏闪烁效果
 
   # ==================== 网络请求 ====================
   dio: ^5.9.0                      # HTTP 客户端

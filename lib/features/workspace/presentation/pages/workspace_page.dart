@@ -10,6 +10,7 @@ import '../widgets/date_header_delegate.dart';
 import '../widgets/greeting_header.dart';
 import '../widgets/meeting_card.dart';
 import '../widgets/quick_actions_section.dart';
+import '../widgets/workspace_skeleton.dart';
 
 /// 会议工作台页面
 ///
@@ -20,6 +21,7 @@ import '../widgets/quick_actions_section.dart';
 /// - SliverPersistentHeader 实现日期吸顶效果
 /// - SliverToBoxAdapter 嵌入普通 Widget
 /// - BlocProvider 提供状态管理
+/// - **骨架屏加载**：使用 Shimmer 效果的骨架屏替代单调的加载指示器
 class WorkspacePage extends StatelessWidget {
   const WorkspacePage({super.key});
 
@@ -53,22 +55,18 @@ class _WorkspaceView extends StatelessWidget {
   }
 }
 
-/// 加载中视图
+/// 加载中视图（骨架屏）
+///
+/// 技术要点：
+/// - 使用骨架屏替代单调的 CircularProgressIndicator
+/// - 骨架屏结构与真实内容一致，减少布局跳动
+/// - Shimmer 动画提示用户内容正在加载
 class _LoadingView extends StatelessWidget {
   const _LoadingView();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CircularProgressIndicator(),
-          const SizedBox(height: 16),
-          Text(context.l10n.workspaceLoading),
-        ],
-      ),
-    );
+    return const WorkspaceSkeleton();
   }
 }
 
