@@ -13,10 +13,13 @@ import '../../domain/models/meeting.dart';
 /// - 会议室信息
 ///
 /// 技术要点：
+/// - **RepaintBoundary**：隔离重绘区域，防止卡片内部更新影响其他卡片
+/// - **AutomaticKeepAliveClientMixin**：保持卡片状态，滚出屏幕后不销毁
+/// - **const 优化**：静态装饰和样式使用 const，减少对象创建
 /// - 使用 InkWell 实现点击效果
 /// - 状态标签使用不同颜色区分
 /// - 参会人头像堆叠显示
-class MeetingCard extends StatelessWidget {
+class MeetingCard extends StatefulWidget {
   /// 会议数据
   final Meeting meeting;
 
@@ -30,50 +33,72 @@ class MeetingCard extends StatelessWidget {
   });
 
   @override
+  State<MeetingCard> createState() => _MeetingCardState();
+}
+
+class _MeetingCardState extends State<MeetingCard>
+    with AutomaticKeepAliveClientMixin {
+  /// 保持状态，滚出屏幕后不销毁
+  ///
+  /// 技术要点：
+  /// - 返回 true 表示保持状态
+  /// - 避免快速滚动时频繁创建/销毁组件
+  /// - 以内存换取滚动流畅度
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    // AutomaticKeepAliveClientMixin 要求调用 super.build
+    super.build(context);
+
     final theme = Theme.of(context);
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      elevation: meeting.status == MeetingStatus.ongoing ? 2 : 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: meeting.status == MeetingStatus.ongoing
-            ? BorderSide(color: theme.colorScheme.primary, width: 1.5)
-            : BorderSide.none,
-      ),
-      child: InkWell(
-        onTap: onTap ?? () => _showMeetingDetails(context),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 第一行：状态标签 + 时间
-              _buildHeader(context, theme),
-              const SizedBox(height: 12),
+    // RepaintBoundary 隔离重绘区域
+    // 当卡片内部状态变化时，不会触发其他卡片重绘
+    return RepaintBoundary(
+      child: Card(
+        margin: _cardMargin,
+        elevation: widget.meeting.status == MeetingStatus.ongoing ? 2 : 1,
+        shape: RoundedRectangleBorder(
+          borderRadius: _cardBorderRadius,
+          side: widget.meeting.status == MeetingStatus.ongoing
+              ? BorderSide(color: theme.colorScheme.primary, width: 1.5)
+              : BorderSide.none,
+        ),
+        child: InkWell(
+          onTap: widget.onTap ?? () => _showMeetingDetails(context),
+          borderRadius: _cardBorderRadius,
+          child: Padding(
+            padding: _cardPadding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 第一行：状态标签 + 时间
+                _buildHeader(context, theme),
+                const SizedBox(height: 12),
 
-              // 第二行：会议标题
-              Text(
-                meeting.title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                // 第二行：会议标题
+                Text(
+                  widget.meeting.title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-
-              // 第三行：会议室（如果有）
-              if (meeting.roomName != null) ...[
-                _buildRoomInfo(theme),
                 const SizedBox(height: 8),
-              ],
 
-              // 第四行：参会人
-              _buildAttendees(context, theme),
-            ],
+                // 第三行：会议室（如果有）
+                if (widget.meeting.roomName != null) ...[
+                  _buildRoomInfo(theme),
+                  const SizedBox(height: 8),
+                ],
+
+                // 第四行：参会人
+                _buildAttendees(context, theme),
+              ],
+            ),
           ),
         ),
       ),
@@ -86,7 +111,7 @@ class MeetingCard extends StatelessWidget {
     return Row(
       children: [
         // 状态标签
-        _StatusLabel(status: meeting.status),
+        _StatusLabel(status: widget.meeting.status),
         const SizedBox(width: 12),
 
         // 时间范围
@@ -100,7 +125,7 @@ class MeetingCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                meeting.formattedTimeRange,
+                widget.meeting.formattedTimeRange,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -111,13 +136,13 @@ class MeetingCard extends StatelessWidget {
 
         // 时长
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: _durationPadding,
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: _durationBorderRadius,
           ),
           child: Text(
-            l10n.workspaceMeetingDuration(meeting.durationMinutes),
+            l10n.workspaceMeetingDuration(widget.meeting.durationMinutes),
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -138,7 +163,7 @@ class MeetingCard extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         Text(
-          meeting.roomName!,
+          widget.meeting.roomName!,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -152,7 +177,7 @@ class MeetingCard extends StatelessWidget {
     return Row(
       children: [
         // 头像堆叠
-        _AvatarStack(attendees: meeting.attendees),
+        _AvatarStack(attendees: widget.meeting.attendees),
         const SizedBox(width: 8),
 
         // 参会人摘要
@@ -172,7 +197,7 @@ class MeetingCard extends StatelessWidget {
 
   String _getAttendeesSummary(BuildContext context) {
     final l10n = context.l10n;
-    final attendees = meeting.attendees;
+    final attendees = widget.meeting.attendees;
 
     if (attendees.isEmpty) return l10n.workspaceNoAttendees;
     if (attendees.length <= 3) {
@@ -187,11 +212,20 @@ class MeetingCard extends StatelessWidget {
     final l10n = context.l10n;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(l10n.workspaceViewMeeting(meeting.title)),
+        content: Text(l10n.workspaceViewMeeting(widget.meeting.title)),
         duration: const Duration(seconds: 1),
       ),
     );
   }
+
+  // ==================== const 优化 ====================
+  // 静态常量避免每次 build 时创建新对象
+
+  static const _cardMargin = EdgeInsets.symmetric(horizontal: 16, vertical: 6);
+  static const _cardPadding = EdgeInsets.all(16);
+  static const _cardBorderRadius = BorderRadius.all(Radius.circular(12));
+  static const _durationPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 2);
+  static const _durationBorderRadius = BorderRadius.all(Radius.circular(4));
 }
 
 /// 状态标签组件
@@ -205,10 +239,10 @@ class _StatusLabel extends StatelessWidget {
     final (label, color, bgColor) = _getStatusStyle(context);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: _padding,
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: _borderRadius,
       ),
       child: Text(
         label,
@@ -246,9 +280,17 @@ class _StatusLabel extends StatelessWidget {
         );
     }
   }
+
+  // const 优化
+  static const _padding = EdgeInsets.symmetric(horizontal: 8, vertical: 4);
+  static const _borderRadius = BorderRadius.all(Radius.circular(4));
 }
 
 /// 头像堆叠组件
+///
+/// 技术要点：
+/// - const 颜色数组避免重复创建
+/// - 使用 static const 定义尺寸常量
 class _AvatarStack extends StatelessWidget {
   final List<Attendee> attendees;
 
@@ -355,14 +397,17 @@ class _AvatarStack extends StatelessWidget {
     return Center(
       child: Text(
         attendee.name.isNotEmpty ? attendee.name[0] : '?',
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
+        style: _initialTextStyle,
       ),
     );
   }
+
+  // const 优化：预定义样式和颜色
+  static const _initialTextStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
 
   // 预定义的头像背景色
   static const _avatarColors = [
