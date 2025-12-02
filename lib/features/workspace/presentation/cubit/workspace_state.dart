@@ -44,12 +44,14 @@ enum GreetingType {
 /// 会议工作台状态
 ///
 /// 管理工作台页面的所有状态
+///
+/// 技术要点：
+/// - **局部刷新优化**：移除 currentTime 字段，时间更新由 LiveTimeDisplay 组件独立管理
+/// - 避免时间更新触发整个状态树重建
+/// - 问候语类型仅在小时变化时更新（频率低）
 class WorkspaceState extends Equatable {
   /// 问候语类型
   final GreetingType greetingType;
-
-  /// 当前时间
-  final DateTime currentTime;
 
   /// 今日会议数量
   final int todayMeetingCount;
@@ -68,7 +70,6 @@ class WorkspaceState extends Equatable {
 
   const WorkspaceState({
     this.greetingType = GreetingType.morning,
-    required this.currentTime,
     this.todayMeetingCount = 0,
     this.quickActions = const [],
     this.meetingGroups = const [],
@@ -79,9 +80,28 @@ class WorkspaceState extends Equatable {
   /// 初始状态
   factory WorkspaceState.initial() {
     return WorkspaceState(
-      currentTime: DateTime.now(),
+      greetingType: _getGreetingTypeFromHour(DateTime.now().hour),
       quickActions: QuickAction.getDefaultActions(),
     );
+  }
+
+  /// 根据小时获取问候语类型
+  static GreetingType _getGreetingTypeFromHour(int hour) {
+    if (hour < 6) {
+      return GreetingType.lateNight;
+    } else if (hour < 9) {
+      return GreetingType.morning;
+    } else if (hour < 12) {
+      return GreetingType.forenoon;
+    } else if (hour < 14) {
+      return GreetingType.noon;
+    } else if (hour < 18) {
+      return GreetingType.afternoon;
+    } else if (hour < 22) {
+      return GreetingType.evening;
+    } else {
+      return GreetingType.lateNight;
+    }
   }
 
   /// 是否正在加载
@@ -99,7 +119,6 @@ class WorkspaceState extends Equatable {
   /// 创建副本
   WorkspaceState copyWith({
     GreetingType? greetingType,
-    DateTime? currentTime,
     int? todayMeetingCount,
     List<QuickAction>? quickActions,
     List<MeetingGroup>? meetingGroups,
@@ -108,7 +127,6 @@ class WorkspaceState extends Equatable {
   }) {
     return WorkspaceState(
       greetingType: greetingType ?? this.greetingType,
-      currentTime: currentTime ?? this.currentTime,
       todayMeetingCount: todayMeetingCount ?? this.todayMeetingCount,
       quickActions: quickActions ?? this.quickActions,
       meetingGroups: meetingGroups ?? this.meetingGroups,
@@ -120,7 +138,6 @@ class WorkspaceState extends Equatable {
   @override
   List<Object?> get props => [
         greetingType,
-        currentTime,
         todayMeetingCount,
         quickActions,
         meetingGroups,

@@ -136,12 +136,11 @@ class _SuccessView extends StatelessWidget {
             ),
           ),
 
-          // 问候语头部
+          // 问候语头部（时间显示已使用 LiveTimeDisplay 局部刷新）
           SliverToBoxAdapter(
             child: GreetingHeader(
               greetingType: state.greetingType,
               meetingCount: state.todayMeetingCount,
-              currentTime: state.currentTime,
             ),
           ),
 

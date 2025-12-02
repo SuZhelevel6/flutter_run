@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/l10n/l10n.dart';
 import '../cubit/workspace_state.dart';
+import 'live_time_display.dart';
 
 /// 问候语头部组件
 ///
 /// 显示：
 /// - 时段问候语（早上好、下午好等）
 /// - 今日会议数量
-/// - 当前���间
+/// - 当前时间（使用 LiveTimeDisplay 局部刷新）
+///
+/// 技术要点：
+/// - **局部刷新优化**：时间显示使用独立的 LiveTimeDisplay 组件
+/// - 时间更新时只有 LiveTimeDisplay 重建，本组件不会重建
+/// - 问候语和会议数量由父级 Cubit 控制，与时间更新解耦
 class GreetingHeader extends StatelessWidget {
   /// 问候语类型
   final GreetingType greetingType;
@@ -16,14 +22,10 @@ class GreetingHeader extends StatelessWidget {
   /// 今日会议数量
   final int meetingCount;
 
-  /// 当前时间
-  final DateTime currentTime;
-
   const GreetingHeader({
     super.key,
     required this.greetingType,
     required this.meetingCount,
-    required this.currentTime,
   });
 
   @override
@@ -70,27 +72,8 @@ class GreetingHeader extends StatelessWidget {
             ),
           ),
 
-          // 右侧：时间显示
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // 时间
-              Text(
-                _formatTime(currentTime),
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              // 日期
-              Text(
-                _formatDate(context, currentTime),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
+          // 右侧：时间显示（独立组件，局部刷新）
+          const LiveTimeDisplay(),
         ],
       ),
     );
@@ -113,24 +96,5 @@ class GreetingHeader extends StatelessWidget {
       case GreetingType.evening:
         return l10n.workspaceGreetingEvening;
     }
-  }
-
-  String _formatTime(DateTime time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-  }
-
-  String _formatDate(BuildContext context, DateTime date) {
-    final l10n = context.l10n;
-    final weekdays = [
-      l10n.commonWeekdayMon,
-      l10n.commonWeekdayTue,
-      l10n.commonWeekdayWed,
-      l10n.commonWeekdayThu,
-      l10n.commonWeekdayFri,
-      l10n.commonWeekdaySat,
-      l10n.commonWeekdaySun,
-    ];
-    final weekday = weekdays[date.weekday - 1];
-    return l10n.formatMonthDayWeekday(date.month, date.day, weekday);
   }
 }
